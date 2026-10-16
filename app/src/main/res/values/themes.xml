@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.LittleCloud" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/lc_bg</item>
+    </style>
+    <color name="lc_bg">#F2F0EB</color>
+    <color name="lc_icon_bg">#F2F0EB</color>
+</resources>
