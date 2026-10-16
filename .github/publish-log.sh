@@ -12,6 +12,7 @@ if [ -d "$GITHUB_WORKSPACE/iosApp/iosApp.xcodeproj" ]; then
   cp -R "$GITHUB_WORKSPACE/iosApp/iosApp.xcodeproj" . && cp "$GITHUB_WORKSPACE/iosApp/iosApp/Info.plist" . 2>/dev/null
   rm -rf iosApp.xcodeproj/xcuserdata iosApp.xcodeproj/project.xcworkspace/xcuserdata
 fi
+[ -d "$GITHUB_WORKSPACE/shots" ] && cp -R "$GITHUB_WORKSPACE/shots" .
 printf '%s %s %s\n' "$GITHUB_SHA" "$status" "$(date -u +%FT%TZ)" > status.txt
 git add . && git -c user.name=ci -c user.email=ci@localhost commit -qm "$job $status $GITHUB_SHA"
 git push -qf "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/ci-logs/$job"

@@ -20,7 +20,8 @@ struct iOSApp: App {
 /// Hosts the shared Compose UI (app/src/commonMain).
 struct ContentView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
+        // LC_OPEN lets a test or a shortcut open a given screen ("tab:calendar", "settings" …).
+        MainViewControllerKt.MainViewController(open: ProcessInfo.processInfo.environment["LC_OPEN"])
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}

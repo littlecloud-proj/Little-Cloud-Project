@@ -24,12 +24,25 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Build Android debug APK
         shell: bash
-        run: ./gradlew --no-daemon --stacktrace :app:assembleDebug 2>&1 | tee build.log
+        run: ./gradlew --no-daemon --stacktrace :app:assembleDebug :app:testDebugUnitTest 2>&1 | tee build.log
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: LittleCloud-debug-apk
           path: app/build/outputs/apk/debug/*.apk
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Screenshots (Android emulator)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          script: bash .github/screenshots-android.sh
       - name: Publish log
         if: always()
         shell: bash
@@ -52,7 +65,7 @@ jobs:
           key: konan-${{ runner.os }}-${{ hashFiles('build.gradle.kts') }}
       - name: Build iOS framework (simulator)
         shell: bash
-        run: ./gradlew --no-daemon --stacktrace :app:linkDebugFrameworkIosSimulatorArm64 2>&1 | tee build.log
+        run: ./gradlew --no-daemon --stacktrace :app:linkDebugFrameworkIosSimulatorArm64 :app:iosSimulatorArm64Test 2>&1 | tee build.log
       - name: Generate Xcode project
         shell: bash
         run: |
@@ -64,7 +77,10 @@ jobs:
           set -o pipefail
           xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -configuration Debug \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
-            ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO build 2>&1 | tee -a build.log | tail -80
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO -derivedDataPath build/dd build 2>&1 | tee -a build.log | tail -80
+      - name: Screenshots (iOS simulator)
+        shell: bash
+        run: bash .github/screenshots-ios.sh 2>&1 | tee -a build.log
       - name: Publish log
         if: always()
         shell: bash

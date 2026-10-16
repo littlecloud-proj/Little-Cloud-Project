@@ -30,6 +30,9 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
         androidMain.dependencies {
             implementation("androidx.core:core-ktx:1.15.0")
             implementation("androidx.activity:activity-compose:1.9.3")

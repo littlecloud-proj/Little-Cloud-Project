@@ -71,6 +71,9 @@ private fun AppContent(state: AppState, openRequest: MutableState<String?>) {
                 o == "intimacy" -> nav.openIntimacy()
                 o == "evening" -> nav.arrange(true)
                 o.startsWith("prayer:") -> nav.openPrayer(PrayerItem("", prayerId = o.removePrefix("prayer:")), null)
+                o == "settings" -> nav.openSettings()
+                o.startsWith("tab:") ->
+                    Tab.entries.firstOrNull { it.name.equals(o.removePrefix("tab:"), ignoreCase = true) }?.let { nav.goTab(it) }
             }
             openRequest.value = null
         }
