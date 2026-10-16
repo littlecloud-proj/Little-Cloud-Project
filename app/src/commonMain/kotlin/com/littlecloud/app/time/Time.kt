@@ -20,8 +20,8 @@ typealias LocalDate = kotlinx.datetime.LocalDate
 typealias LocalTime = kotlinx.datetime.LocalTime
 typealias DayOfWeek = kotlinx.datetime.DayOfWeek
 
-fun LocalDate.Companion.of(year: Int, month: Int, day: Int): LocalDate = LocalDate(year, month, day)
-fun LocalDate.Companion.now(): LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
+fun kotlinx.datetime.LocalDate.Companion.of(year: Int, month: Int, day: Int): LocalDate = LocalDate(year, month, day)
+fun kotlinx.datetime.LocalDate.Companion.now(): LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
 fun LocalDate.plusDays(n: Long): LocalDate = plus(n, DateTimeUnit.DAY)
 fun LocalDate.plusDays(n: Int): LocalDate = plus(n, DateTimeUnit.DAY)
@@ -42,8 +42,8 @@ fun LocalDate.withDayOfMonth(day: Int): LocalDate = LocalDate(year, monthNumber,
 /** ISO day number: Monday = 1 … Sunday = 7, as java.time's DayOfWeek.getValue(). */
 val DayOfWeek.value: Int get() = isoDayNumber
 
-fun LocalTime.Companion.of(hour: Int, minute: Int): LocalTime = LocalTime(hour, minute)
-fun LocalTime.Companion.now(): LocalTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).time
+fun kotlinx.datetime.LocalTime.Companion.of(hour: Int, minute: Int): LocalTime = LocalTime(hour, minute)
+fun kotlinx.datetime.LocalTime.Companion.now(): LocalTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).time
 
 fun nowMillis(): Long = Clock.System.now().toEpochMilliseconds()
 
