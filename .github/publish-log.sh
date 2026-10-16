@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Pushes this job's build log to the branch ci-logs/<job>, so it can be read without the Actions UI.
+set -u
+job="$1"; status="$2"
+dir="$RUNNER_TEMP/log-$job"
+mkdir -p "$dir" && cd "$dir" || exit 0
+git init -q -b main
+cp "$GITHUB_WORKSPACE/build.log" . 2>/dev/null || echo "no build.log" > build.log
+grep -nE '^e: |error:|FAILURE|What went wrong|BUILD (SUCCESSFUL|FAILED)|\*\* BUILD' build.log | head -300 > errors.txt || true
+printf '%s %s %s\n' "$GITHUB_SHA" "$status" "$(date -u +%FT%TZ)" > status.txt
+git add . && git -c user.name=ci -c user.email=ci@localhost commit -qm "$job $status $GITHUB_SHA"
+git push -qf "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/ci-logs/$job"

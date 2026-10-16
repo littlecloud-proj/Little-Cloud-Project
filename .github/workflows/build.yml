@@ -2,11 +2,15 @@ name: Build
 
 on:
   push:
+    branches-ignore: ['ci-logs/**']
   workflow_dispatch:
 
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: write
 
 jobs:
   android:
@@ -19,16 +23,47 @@ jobs:
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
       - name: Build Android debug APK
-        run: ./gradlew --no-daemon :app:assembleDebug 2>&1 | tee build-android.log
         shell: bash
-      - name: Upload log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-log
-          path: build-android.log
+        run: ./gradlew --no-daemon --stacktrace :app:assembleDebug 2>&1 | tee build.log
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: LittleCloud-debug-apk
           path: app/build/outputs/apk/debug/*.apk
+      - name: Publish log
+        if: always()
+        shell: bash
+        run: .github/publish-log.sh android "${{ job.status }}"
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  ios:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('build.gradle.kts') }}
+      - name: Build iOS framework (simulator)
+        shell: bash
+        run: ./gradlew --no-daemon --stacktrace :app:linkDebugFrameworkIosSimulatorArm64 2>&1 | tee build.log
+      - name: Build iOS app (simulator)
+        if: hashFiles('iosApp/iosApp.xcodeproj/project.pbxproj') != ''
+        shell: bash
+        run: |
+          set -o pipefail
+          xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee -a build.log | tail -80
+      - name: Publish log
+        if: always()
+        shell: bash
+        run: .github/publish-log.sh ios "${{ job.status }}"
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
