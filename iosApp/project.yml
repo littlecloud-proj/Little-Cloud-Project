@@ -1,5 +1,5 @@
 # Xcode project for the iPhone app. The shared Kotlin code is built into
-# LittleCloud.framework by Gradle in the "Compile Kotlin" build phase.
+# LittleCloudKit.framework by Gradle in the "Compile Kotlin" build phase.
 # Regenerate iosApp.xcodeproj with:  cd iosApp && xcodegen
 name: iosApp
 options:
@@ -42,7 +42,7 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         ENABLE_USER_SCRIPT_SANDBOXING: NO
         FRAMEWORK_SEARCH_PATHS: ["$(inherited)", "$(SRCROOT)/../app/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)"]
-        OTHER_LDFLAGS: ["$(inherited)", "-framework", "LittleCloud"]
+        OTHER_LDFLAGS: ["$(inherited)", "-framework", "LittleCloudKit"]
         CODE_SIGN_STYLE: Automatic
     preBuildScripts:
       - name: Compile Kotlin

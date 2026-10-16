@@ -1,5 +1,5 @@
 import SwiftUI
-import LittleCloud
+import LittleCloudKit
 
 @main
 struct iOSApp: App {
