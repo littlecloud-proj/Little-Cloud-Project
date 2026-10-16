@@ -84,6 +84,7 @@ data class MonthDay(val month: Int, val day: Int) : Comparable<MonthDay> {
 }
 
 data class YearMonth(val year: Int, val month: Int) {
+    val monthValue: Int get() = month
     fun atDay(day: Int): LocalDate = LocalDate(year, month, day)
     fun lengthOfMonth(): Int = monthLength(year, month)
     fun plusMonths(n: Long): YearMonth = plusMonths(n.toInt())
