@@ -13,12 +13,15 @@ import kotlinx.serialization.json.*
 object LittleOffice {
     data class Block(val headLa: String?, val headEn: String?, val la: List<String>, val en: List<String>)
 
-    private val cache = mutableMapOf<String, JsonObject>()
+    @Volatile private var office1954: JsonObject? = null
+    @Volatile private var office1955: JsonObject? = null
+    @Volatile private var office1960: JsonObject? = null
 
     /** office.json follows the rubrics of 1960, office1955.json those of 1955, office1954.json those before. */
-    private fun load(rubrics: String): JsonObject {
-        val file = when (rubrics) { "1954" -> "office1954.json"; "1955" -> "office1955.json"; else -> "office.json" }
-        return synchronized(cache) { cache[file] } ?: parse(file).also { synchronized(cache) { cache[file] = it } }
+    private fun load(rubrics: String): JsonObject = when (rubrics) {
+        "1954" -> office1954 ?: parse("office1954.json").also { office1954 = it }
+        "1955" -> office1955 ?: parse("office1955.json").also { office1955 = it }
+        else -> office1960 ?: parse("office.json").also { office1960 = it }
     }
 
     fun key(d: LocalDate, hour: String): String {
