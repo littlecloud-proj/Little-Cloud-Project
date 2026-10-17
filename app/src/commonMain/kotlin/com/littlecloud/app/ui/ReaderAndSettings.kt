@@ -279,8 +279,10 @@ fun SettingsScreen(state: AppState, onBack: () -> Unit) {
             }
             Column {
                 SectionLabel("Language of prayers and the Office")
-                Segmented(listOf("en" to "English", "es" to "Español"), state.vernacular) { state.updateVernacular(it) }
-                Spacer(Modifier.height(10.dp))
+                if (com.littlecloud.app.data.SPANISH_ENABLED) {
+                    Segmented(listOf("en" to "English", "es" to "Español"), state.vernacular) { state.updateVernacular(it) }
+                    Spacer(Modifier.height(10.dp))
+                }
                 Segmented(langOptions(state), state.officeLang) { state.updateOfficeLang(it) }
                 Spacer(Modifier.height(8.dp))
                 LText(

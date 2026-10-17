@@ -172,6 +172,12 @@ object Store {
     }
 }
 
+/**
+ * Spanish is set aside until traditional translations of the collects, readings and Office are
+ * on file. The Spanish prayer texts stay in the code; set this to true to offer Spanish again.
+ */
+const val SPANISH_ENABLED = false
+
 /** UI state, backed by the saved settings. */
 class AppState {
     private val prefs = Store.prefs()
@@ -183,7 +189,7 @@ class AppState {
     var officeLang by mutableStateOf(prefs.getString("officeLang", "both") ?: "both"); private set
     var carmelite by mutableStateOf(prefs.getBoolean("carmelite", true)); private set
     /** Vernacular for prayers and the Office: "en" or "es". */
-    var vernacular by mutableStateOf(prefs.getString("vernacular", "en") ?: "en"); private set
+    var vernacular by mutableStateOf(if (SPANISH_ENABLED) prefs.getString("vernacular", "en") ?: "en" else "en"); private set
     var triduum by mutableStateOf(prefs.getBoolean("triduum", true)); private set
     /** "1954": the rubrics before 1955 (Divino Afflatu). "1962": the rubrics of 1960/62. */
     var rubrics by mutableStateOf(prefs.getString("rubrics", "1954") ?: "1954"); private set
