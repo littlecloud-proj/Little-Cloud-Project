@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The little cloud rising out of the sea (3 Kings 18:44): a cream cloud over two gold waves. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <group
-        android:translateX="30"
-        android:translateY="31"
-        android:scaleX="2"
-        android:scaleY="2">
+        android:translateX="28"
+        android:translateY="21"
+        android:scaleX="2.2"
+        android:scaleY="2.2">
         <path
-            android:fillColor="#6A4632"
+            android:fillColor="#F2F0EB"
             android:pathData="M7,18.5h10.5a4,4 0,0 0,0.5 -7.97A5.5,5.5 0,0 0,7.4 9.1A4.75,4.75 0,0 0,7 18.5z" />
     </group>
+    <path
+        android:strokeColor="#D2B28F"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:pathData="M34,68q3.33,-2.2 6.67,0t6.67,0t6.67,0t6.67,0t6.67,0t6.67,0" />
+    <path
+        android:strokeColor="#D2B28F"
+        android:strokeAlpha="0.65"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:pathData="M34,74.5q3.33,-2.2 6.67,0t6.67,0t6.67,0t6.67,0t6.67,0t6.67,0" />
 </vector>

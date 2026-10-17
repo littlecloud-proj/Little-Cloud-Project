@@ -4,5 +4,5 @@
         <item name="android:windowBackground">@color/lc_bg</item>
     </style>
     <color name="lc_bg">#F2F0EB</color>
-    <color name="lc_icon_bg">#F2F0EB</color>
+    <color name="lc_icon_bg">#3E5573</color>
 </resources>
