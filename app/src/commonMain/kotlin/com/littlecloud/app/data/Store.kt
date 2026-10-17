@@ -46,6 +46,17 @@ data class OfficeHour(
     val minutes: Int,
 )
 
+/**
+ * One hour of the Little Office as it falls in a day's list. Matins and Lauds said by
+ * anticipation belong to [date] (tomorrow) but are said this evening, after Compline.
+ */
+data class HourSlot(val hour: OfficeHour, val date: LocalDate, val anticipated: Boolean, val minutes: Int) {
+    val id: String get() = hour.id
+    val key: String get() = "o|${hour.id}"
+    /** Distinguishes tonight's anticipated Matins from this morning's. */
+    val slotId: String get() = if (anticipated) "${hour.id}+1" else hour.id
+}
+
 object Store {
     const val PREFS = "littlecloud"
     fun prefs(): Prefs = appPrefs()
@@ -192,24 +203,103 @@ class AppState {
 
     var today by mutableStateOf(LocalDate.now()); private set
     var done by mutableStateOf(loadDone(LocalDate.now())); private set
+    /** Tomorrow's ticks: Matins and Lauds said tonight by anticipation count for tomorrow. */
+    private var doneNext by mutableStateOf(loadDone(LocalDate.now().plusDays(1)))
 
     fun refreshDay() {
         val now = LocalDate.now()
         if (now != today) {
             today = now
             done = loadDone(now)
+            doneNext = loadDone(now.plusDays(1))
         }
     }
 
     private fun loadDone(d: LocalDate): Set<String> = prefs.getStringSet("done_$d", emptySet())?.toSet() ?: emptySet()
 
     fun isDone(key: String) = key in done
-    fun toggleDone(key: String) {
-        done = if (key in done) done - key else done + key
-        val edit = prefs.edit().putStringSet("done_$today", done)
+    fun toggleDone(key: String) = toggleDoneOn(today, key)
+
+    fun isDoneOn(d: LocalDate, key: String) = when (d) {
+        today -> key in done
+        today.plusDays(1) -> key in doneNext
+        else -> key in loadDone(d)
+    }
+
+    fun toggleDoneOn(d: LocalDate, key: String) {
+        val set = loadDone(d).let { if (d == today) done else if (d == today.plusDays(1)) doneNext else it }
+        val new = if (key in set) set - key else set + key
+        when (d) {
+            today -> done = new
+            today.plusDays(1) -> doneNext = new
+        }
+        val edit = prefs.edit().putStringSet("done_$d", new)
         // forget ticks older than a week
         prefs.keys.filter { it.startsWith("done_") && it < "done_${today.minusDays(7)}" }.forEach { edit.remove(it) }
         edit.apply()
+    }
+
+    // ---- Matins and Lauds by anticipation ------------------------------------------------
+
+    /** Say Matins the evening before. */
+    var anticipateMatins by mutableStateOf(prefs.getBoolean("anticipateMatins", false)); private set
+    /** Say Lauds with Matins the evening before (only when Matins is anticipated). */
+    var anticipateLauds by mutableStateOf(prefs.getBoolean("anticipateLauds", false)); private set
+
+    /** The evening times for anticipated Matins and Lauds, after Compline. */
+    fun eveMinutes(id: String): Int = prefs.getInt("hour_${id}_eve", if (id == "matins") 21 * 60 + 15 else 21 * 60 + 35)
+    fun setEveTime(id: String, minutes: Int) {
+        prefs.edit().putInt("hour_${id}_eve", minutes).apply()
+        hours = Store.loadHours() // recompose the lists
+    }
+
+    /** Thursday, Friday and Saturday of Holy Week: Tenebrae, always said the evening before. */
+    private fun tenebrae(d: LocalDate) = Calendar1962.isTriduum(d)
+
+    /** Whether the [id] hour ("matins" or "lauds") of day [d] is said on the eve. */
+    fun anticipates(d: LocalDate, id: String): Boolean {
+        if (tenebrae(d)) return id == "matins" || id == "lauds"
+        // Christmas: Matins is the night office of the feast itself, said that night.
+        if (d.monthNumber == 12 && d.dayOfMonth == 25) return false
+        return when (id) {
+            "matins" -> anticipateMatins
+            "lauds" -> anticipateMatins && anticipateLauds
+            else -> false
+        }
+    }
+
+    /** The hours to be said on day [d], in order: the day's own, then any of tomorrow's said tonight. */
+    fun slots(d: LocalDate): List<HourSlot> {
+        val own = hours.filter { !anticipates(d, it.id) }.map { HourSlot(it, d, false, it.minutes) }
+        val next = d.plusDays(1)
+        val eve = hours.filter { (it.id == "matins" || it.id == "lauds") && anticipates(next, it.id) }
+            .map { HourSlot(it, next, true, eveMinutes(it.id)) }
+        return own + eve
+    }
+
+    fun isSaid(slot: HourSlot) = isDoneOn(slot.date, slot.key)
+    fun toggleSaid(slot: HourSlot) = toggleDoneOn(slot.date, slot.key)
+
+    /**
+     * Changes when Matins (and Lauds) are said. The Little Office bell set for the old time of
+     * Matins moves with it. Returns true when the bells changed and need scheduling again.
+     */
+    fun updateAnticipation(matins: Boolean, lauds: Boolean): Boolean {
+        val oldMatins = if (anticipateMatins) eveMinutes("matins") else hours.first { it.id == "matins" }.minutes
+        anticipateMatins = matins
+        anticipateLauds = matins && lauds
+        prefs.edit().putBoolean("anticipateMatins", anticipateMatins).putBoolean("anticipateLauds", anticipateLauds).apply()
+        val newMatins = if (matins) eveMinutes("matins") else hours.first { it.id == "matins" }.minutes
+        if (oldMatins == newMatins) return false
+        var changed = false
+        val list = bells.map { b ->
+            if (b.opens == "office" && oldMatins in b.times && newMatins !in b.times) {
+                changed = true
+                b.copy(times = (b.times - oldMatins + newMatins).sorted())
+            } else b
+        }
+        if (changed) updateBells(list)
+        return changed
     }
 
     fun updateTheme(v: String) { theme = v; prefs.edit().putString("theme", v).apply() }

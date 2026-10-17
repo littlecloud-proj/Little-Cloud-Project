@@ -89,35 +89,28 @@ fun TodayScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.S
             // Fasting
             FastRow(state, nav)
 
-            // Office and Litany of Loreto tiles
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                val hours = state.hours
-                val next = hours.firstOrNull { !state.isDone("o|${it.id}") && it.minutes >= nowMin - 60 }
-                    ?: hours.firstOrNull { !state.isDone("o|${it.id}") }
-                val said = hours.count { state.isDone("o|${it.id}") }
+            // Office and Litany of Loreto tiles: the same height, the same parts in the same places.
+            Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                val slots = state.slots(today)
+                val next = slots.firstOrNull { !state.isSaid(it) && it.minutes >= nowMin - 60 }
+                    ?: slots.firstOrNull { !state.isSaid(it) }
+                val said = slots.count { state.isSaid(it) }
                 Tile(
                     Modifier.weight(1f), Res.drawable.ic_book, "Little Office",
-                    if (next != null) "Next: ${next.latin}\n${fmtTime(next.minutes)}" else "All hours said\nDeo gratias",
+                    if (next != null) "Next: ${next.hour.latin}\n${fmtTime(next.minutes)}" + (if (next.anticipated) " · of tomorrow" else "")
+                    else "All hours said\nDeo gratias",
+                    status = "$said of ${slots.size} hours",
+                    segments = slots.size, filled = said,
                     onClick = { nav.goTab(Tab.HOURS) },
-                ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        hours.forEachIndexed { i, _ ->
-                            Box(
-                                Modifier.weight(1f).height(4.dp).clip(RoundedCornerShape(2.dp))
-                                    .background(if (i < said) Lc.accent else Lc.line)
-                            )
-                        }
-                    }
-                }
-                val loretoKey = "x|Litany of Loreto"
-                val loretoSaid = state.isDone(loretoKey)
+                )
+                val loretoSaid = state.isDone("x|Litany of Loreto")
                 Tile(
                     Modifier.weight(1f), Res.drawable.ic_lily, "Litany of Loreto",
                     "Our Lady’s litany\nDaily for Tertiaries",
-                    { nav.openPrayer(PrayerItem("Litany of Loreto", prayerId = "litany_loreto"), "x|") },
-                ) {
-                    LText(if (loretoSaid) "Said · Deo gratias" else "Pray the litany", 14, Lc.accent)
-                }
+                    status = if (loretoSaid) "Said · Deo gratias" else "Not yet said",
+                    segments = 1, filled = if (loretoSaid) 1 else 0,
+                    onClick = { nav.openPrayer(PrayerItem("Litany of Loreto", prayerId = "litany_loreto"), "x|") },
+                )
             }
 
             // Mental prayer
@@ -141,29 +134,17 @@ fun TodayScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.S
 private fun FastRow(state: AppState, nav: Nav) {
     val f = state.dayInfo(state.today).fast
     val next = if (f.any) null else Calendar1962.nextPenitentialDay(state.today, state.discipline, state.pre1955)
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(if (f.any) Lc.soft else Lc.surface)
-            .border(1.dp, Lc.line, RoundedCornerShape(18.dp))
-            .clickable(role = Role.Button) { nav.goTab(Tab.CALENDAR) }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        CircleIcon(if (f.fast) Res.drawable.ic_bowl else Res.drawable.ic_fish)
-        Spacer(Modifier.width(14.dp))
-        Column(Modifier.weight(1f)) {
-            LText(if (f.any) "${f.headline} today" else "No fast or abstinence today", 17)
-            val sub = when {
-                f.any -> f.reason
-                next != null -> "Next: ${next.second.headline.lowercase()} · ${next.first.format(shortDate)}"
-                else -> ""
-            }
-            if (sub.isNotEmpty()) LText(sub, 14, Lc.muted)
-        }
-        Ic(Res.drawable.ic_chevron_right, 18.dp, Lc.muted)
+    val sub = when {
+        f.any -> f.reason
+        next != null -> "Next: ${next.second.headline.lowercase()} · ${next.first.format(shortDate)}"
+        else -> ""
     }
+    RowCard(
+        if (f.fast) Res.drawable.ic_bowl else Res.drawable.ic_fish,
+        if (f.any) "${f.headline} today" else "No fast or abstinence today",
+        sub,
+        highlighted = f.any,
+    ) { nav.goTab(Tab.CALENDAR) }
 }
 
 @Composable
@@ -172,48 +153,40 @@ private fun Tile(
     icon: DrawableResource,
     title: String,
     sub: String,
+    status: String,
+    segments: Int,
+    filled: Int,
     onClick: () -> Unit,
-    footer: @Composable () -> Unit,
 ) {
     Column(
         modifier
-            .clip(RoundedCornerShape(20.dp))
+            .fillMaxHeight()
+            .clip(CardShape)
             .background(Lc.surface)
-            .border(1.dp, Lc.line, RoundedCornerShape(20.dp))
+            .border(1.dp, Lc.line, CardShape)
             .clickable(role = Role.Button, onClick = onClick)
-            .heightIn(min = 160.dp)
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         CircleIcon(icon)
+        Spacer(Modifier.height(12.dp))
         LText(title, 19, lineHeight = 1.15f)
+        Spacer(Modifier.height(4.dp))
         LText(sub, 15, Lc.muted)
-        Spacer(Modifier.weight(1f, fill = false))
-        footer()
+        Spacer(Modifier.weight(1f).heightIn(min = 14.dp))
+        SegmentBar(segments, filled)
+        Spacer(Modifier.height(8.dp))
+        LText(status, 14, Lc.accent)
     }
 }
 
 @Composable
 private fun MentalPrayerRow(state: AppState, onClick: () -> Unit) {
     val made = state.isDone("di|${state.today}")
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(Lc.surface)
-            .border(1.dp, Lc.line, RoundedCornerShape(18.dp))
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        CircleIcon(Res.drawable.ic_candle)
-        Spacer(Modifier.width(14.dp))
-        Column(Modifier.weight(1f)) {
-            LText("Mental prayer", 17)
-            LText(if (made) "Made today · Deo gratias" else "Timer and the Carmelite method", 14, Lc.muted)
-        }
-        Ic(Res.drawable.ic_chevron_right, 18.dp, Lc.muted)
-    }
+    RowCard(
+        Res.drawable.ic_candle, "Mental prayer",
+        if (made) "Made today · Deo gratias" else "Timer and the Carmelite method",
+        onClick = onClick,
+    )
 }
 
 @Composable
@@ -222,26 +195,11 @@ private fun NextBells(state: AppState, nowMin: Int, onClick: () -> Unit) {
         .flatMap { b -> b.times.map { t -> b.name to t } }
         .sortedBy { (_, t) -> if (t >= nowMin) t else t + 24 * 60 }
         .take(2)
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(Lc.soft)
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Ic(Res.drawable.ic_bell, 22.dp, Lc.accent)
-        Spacer(Modifier.width(14.dp))
-        Column(Modifier.weight(1f)) {
-            LText("Next bells", 16)
-            LText(
-                if (upcoming.isEmpty()) "No bells set" else upcoming.joinToString(" · ") { (n, t) -> "$n ${fmtTime(t)}" },
-                15, Lc.muted,
-            )
-        }
-        Ic(Res.drawable.ic_chevron_right, 18.dp, Lc.muted)
-    }
+    RowCard(
+        Res.drawable.ic_bell, "Next bells",
+        if (upcoming.isEmpty()) "No bells set" else upcoming.joinToString(" · ") { (n, t) -> "$n ${fmtTime(t)}" },
+        onClick = onClick,
+    )
 }
 
 @Composable

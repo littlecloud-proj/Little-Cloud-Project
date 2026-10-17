@@ -22,7 +22,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.littlecloud.app.data.AppState
 import com.littlecloud.app.data.Calendar1962
-import com.littlecloud.app.data.OfficeHour
+import com.littlecloud.app.data.HourSlot
 import com.littlecloud.app.data.LittleOffice
 import com.littlecloud.app.time.*
 
@@ -65,12 +65,14 @@ private fun outline(hourId: String, antiphon: String): String = when (hourId) {
 fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.ScrollState = rememberScrollState()) {
     val today = state.today
     val nowMin = LocalTime.now().let { it.hour * 60 + it.minute }
-    val hours = state.hours
-    val next = hours.firstOrNull { !state.isDone("o|${it.id}") && it.minutes >= nowMin - 60 }
-        ?: hours.firstOrNull { !state.isDone("o|${it.id}") }
+    val slots = state.slots(today)
+    val next = slots.firstOrNull { !state.isSaid(it) && it.minutes >= nowMin - 60 }
+        ?: slots.firstOrNull { !state.isSaid(it) }
     var selectedId by rememberSaveable { mutableStateOf<String?>(null) }
-    val selected = hours.firstOrNull { it.id == selectedId } ?: next ?: hours.last()
-    var editing by remember { mutableStateOf<OfficeHour?>(null) }
+    val selected = slots.firstOrNull { it.slotId == selectedId } ?: next ?: slots.last()
+    var editing by remember { mutableStateOf<HourSlot?>(null) }
+    val platform = com.littlecloud.app.platform.LocalPlatform.current
+    val tomorrowTitle = remember(today, state.rubrics) { state.dayInfo(today.plusDays(1)).title }
     val (antiphon, antiphonId) = Calendar1962.finalMarianAntiphon(today)
 
     Column(Modifier.fillMaxSize()) {
@@ -86,50 +88,51 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             LCard {
-                hours.forEachIndexed { i, h ->
+                slots.forEachIndexed { i, h ->
                     if (i > 0) HLine()
-                    val d = state.isDone("o|${h.id}")
-                    val isSel = h.id == selected.id
+                    val d = state.isSaid(h)
+                    val isSel = h.slotId == selected.slotId
                     Row(
                         Modifier
                             .fillMaxWidth()
                             .background(if (isSel) Lc.soft else Color.Transparent)
-                            .clickable { selectedId = h.id }
+                            .clickable { selectedId = h.slotId }
                             .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Box(
                             Modifier.width(78.dp).heightIn(min = 44.dp)
-                                .clickable(role = Role.Button, onClickLabel = "Change time of ${h.latin}") { editing = h }
+                                .clickable(role = Role.Button, onClickLabel = "Change time of ${h.hour.latin}") { editing = h }
                                 .padding(start = 10.dp),
                             contentAlignment = Alignment.CenterStart,
                         ) { LText(fmtTime(h.minutes), 15, Lc.muted) }
                         Column(Modifier.weight(1f)) {
-                            LText(h.latin, 19)
-                            LText(h.english, 14, Lc.muted)
+                            LText(h.hour.latin, 19)
+                            LText(if (h.anticipated) "Of tomorrow · $tomorrowTitle" else h.hour.english, 14, Lc.muted, maxLines = 2)
                         }
                         if (h == next) {
                             Box(Modifier.clip(RoundedCornerShape(12.dp)).background(Lc.accent).padding(horizontal = 10.dp, vertical = 4.dp)) {
                                 LText("Next", 13, Lc.on, spacing = 0.1f, upper = true)
                             }
                         }
-                        CheckDot(d, (if (d) "Unmark " else "Mark as said: ") + h.latin) { state.toggleDone("o|${h.id}") }
+                        CheckDot(d, (if (d) "Unmark " else "Mark as said: ") + h.hour.latin) { state.toggleSaid(h) }
                     }
                 }
             }
 
             LCard(padding = 18.dp) {
                 Row(verticalAlignment = Alignment.Bottom) {
-                    Heading(selected.latin, 24, Modifier.weight(1f))
+                    Heading(selected.hour.latin + if (selected.anticipated) " of tomorrow" else "", 24, Modifier.weight(1f))
                     LText(fmtTime(selected.minutes), 14, Lc.muted)
                 }
                 Spacer(Modifier.height(14.dp))
                 Segmented(langOptions(state), state.officeLang) { state.updateOfficeLang(it) }
                 Spacer(Modifier.height(16.dp))
                 val pre1955 = state.pre1955
-                val blocks by produceState(initialValue = emptyList<LittleOffice.Block>(), today, selected.id, pre1955) {
+                val officeDate = selected.date
+                val blocks by produceState(initialValue = emptyList<LittleOffice.Block>(), officeDate, selected.id, pre1955) {
                     value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
-                        runCatching { LittleOffice.blocks(today, selected.id, pre1955) }.getOrDefault(emptyList())
+                        runCatching { LittleOffice.blocks(officeDate, selected.id, pre1955) }.getOrDefault(emptyList())
                     }
                 }
                 val es = state.vernacular == "es"
@@ -162,11 +165,14 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
                     13, Lc.muted,
                 )
                 Spacer(Modifier.height(16.dp))
-                val d = state.isDone("o|${selected.id}")
-                PrimaryButton(if (d) "${selected.latin} said · Deo gratias" else "Mark ${selected.latin} as said") {
-                    state.toggleDone("o|${selected.id}")
+                val d = state.isSaid(selected)
+                PrimaryButton(if (d) "${selected.hour.latin} said · Deo gratias" else "Mark ${selected.hour.latin} as said") {
+                    state.toggleSaid(selected)
                 }
             }
+
+            AnticipationCard(state) { if (it) platform.bells.reschedule() }
+
             LText("Tap a time to change it. The Little Office bell is set on the Bells tab.", 14, Lc.muted)
         }
     }
@@ -176,12 +182,47 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
         AlertDialog(
             onDismissRequest = { editing = null },
             confirmButton = {
-                TextButton(onClick = { state.setHourTime(h.id, tp.hour * 60 + tp.minute); editing = null }) { LText("Save", 16, Lc.accent) }
+                TextButton(onClick = {
+                    val m = tp.hour * 60 + tp.minute
+                    if (h.anticipated) state.setEveTime(h.id, m) else state.setHourTime(h.id, m)
+                    editing = null
+                }) { LText("Save", 16, Lc.accent) }
             },
             dismissButton = { TextButton(onClick = { editing = null }) { LText("Cancel", 16, Lc.muted) } },
-            title = { LText("Time for ${h.latin}", 22) },
+            title = { LText("Time for ${h.hour.latin}" + if (h.anticipated) " (the evening before)" else "", 22) },
             text = { TimePicker(state = tp) },
             containerColor = Lc.surface,
+        )
+    }
+}
+
+/**
+ * When Matins and Lauds are said: in the morning, or by the old custom the evening before.
+ * [onBellsChanged] is told when the Little Office bell moved with Matins.
+ */
+@Composable
+private fun AnticipationCard(state: AppState, onBellsChanged: (Boolean) -> Unit) {
+    val choices = listOf("eve" to "The evening before", "morning" to "In the morning")
+    LCard(padding = 18.dp) {
+        SectionLabel("Anticipation")
+        LText("Matutinum", 17)
+        Spacer(Modifier.height(8.dp))
+        Segmented(choices, if (state.anticipateMatins) "eve" else "morning") {
+            onBellsChanged(state.updateAnticipation(it == "eve", state.anticipateLauds))
+        }
+        if (state.anticipateMatins) {
+            Spacer(Modifier.height(14.dp))
+            LText("Laudes", 17)
+            Spacer(Modifier.height(8.dp))
+            Segmented(choices, if (state.anticipateLauds) "eve" else "morning") {
+                state.updateAnticipation(true, it == "eve")
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        LText(
+            "By ancient custom, Matins and Lauds may be said from two o’clock on the eve. " +
+                "Said tonight, they are the hours of tomorrow and count for tomorrow.",
+            14, Lc.muted, lineHeight = 1.4f,
         )
     }
 }

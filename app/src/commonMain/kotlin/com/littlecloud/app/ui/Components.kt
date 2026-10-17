@@ -100,7 +100,8 @@ fun IconBtn(res: DrawableResource, label: String, tint: Color = Lc.muted, size: 
     }
 }
 
-private val CardShape = RoundedCornerShape(22.dp)
+/** One corner radius for every card, tile and row on the screens. */
+val CardShape = RoundedCornerShape(22.dp)
 
 @Composable
 fun LCard(modifier: Modifier = Modifier, padding: Dp = 0.dp, content: @Composable ColumnScope.() -> Unit) {
@@ -302,4 +303,49 @@ fun CollectText(state: com.littlecloud.app.data.AppState, date: com.littlecloud.
     if (showLa) LText(col.la, size, lineHeight = 1.45f)
     if (showLa && showEn) Spacer(Modifier.height(8.dp))
     if (showEn) LText(col.en, size - 1, if (showLa) Lc.muted else Lc.ink, lineHeight = 1.45f)
+}
+
+/**
+ * A one-line card: round icon, title, a muted line beneath, and a chevron. Used for every
+ * tappable row on Today so they read as one family with the cards and tiles.
+ */
+@Composable
+fun RowCard(
+    icon: DrawableResource,
+    title: String,
+    sub: String,
+    highlighted: Boolean = false,
+    onClick: () -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(CardShape)
+            .background(if (highlighted) Lc.soft else Lc.surface)
+            .border(1.dp, Lc.line, CardShape)
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CircleIcon(icon)
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            LText(title, 17)
+            if (sub.isNotEmpty()) LText(sub, 14, Lc.muted)
+        }
+        Ic(Res.drawable.ic_chevron_right, 18.dp, Lc.muted)
+    }
+}
+
+/** A thin progress bar in [segments] parts, the first [filled] of them coloured. */
+@Composable
+fun SegmentBar(segments: Int, filled: Int) {
+    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        repeat(segments) { i ->
+            Box(
+                Modifier.weight(1f).height(4.dp).clip(RoundedCornerShape(2.dp))
+                    .background(if (i < filled) Lc.accent else Lc.line)
+            )
+        }
+    }
 }
