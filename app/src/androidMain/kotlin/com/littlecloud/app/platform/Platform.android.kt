@@ -94,6 +94,9 @@ actual fun PlatformEffects(dark: Boolean) {
 class AndroidPlatform(private val activity: Activity) : PlatformActions {
     override val bells = com.littlecloud.app.bells.AndroidBells(activity)
     override val canPrint = true
+    override val appVersion: String =
+        runCatching { activity.packageManager.getPackageInfo(activity.packageName, 0).versionName }.getOrNull() ?: ""
+    override val deviceInfo: String = "${Build.MANUFACTURER} ${Build.MODEL} · Android ${Build.VERSION.RELEASE}"
     override fun print(state: AppState, evening: Boolean) = PrayerPrinter.print(activity, state, evening)
     override fun startPrayerTimer(minutes: Int): Long = BellScheduler.startPrayerTimer(activity.applicationContext, minutes)
     override fun cancelPrayerTimer() = BellScheduler.cancelPrayerTimer(activity.applicationContext)

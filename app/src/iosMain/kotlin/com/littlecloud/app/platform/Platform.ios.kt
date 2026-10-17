@@ -68,6 +68,11 @@ actual fun PlatformEffects(dark: Boolean) {
 object IosPlatform : PlatformActions {
     private const val TIMER_ID = "littlecloud.prayerTimer"
 
+    override val appVersion: String =
+        platform.Foundation.NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleShortVersionString") as? String ?: ""
+    override val deviceInfo: String =
+        platform.UIKit.UIDevice.currentDevice.let { "${it.model} · ${it.systemName} ${it.systemVersion}" }
+
     override val canPrint: Boolean get() = UIPrintInteractionController.isPrintingAvailable()
 
     override fun print(state: AppState, evening: Boolean) {

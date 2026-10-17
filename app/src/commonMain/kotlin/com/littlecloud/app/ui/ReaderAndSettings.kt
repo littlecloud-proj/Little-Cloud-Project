@@ -330,6 +330,48 @@ fun SettingsScreen(state: AppState, onBack: () -> Unit) {
                     15, Lc.muted, lineHeight = 1.45f,
                 )
             }
+            AboutSection(state)
         }
     }
 }
+
+/** The address that receives feedback from the app. */
+const val FEEDBACK_EMAIL = "LittleCloudProject@proton.me"
+
+/** About and feedback, at the foot of Settings. Feedback opens the phone's own mail app. */
+@Composable
+private fun AboutSection(state: AppState) {
+    val platform = com.littlecloud.app.platform.LocalPlatform.current
+    val uri = androidx.compose.ui.platform.LocalUriHandler.current
+    Column {
+        SectionLabel("About")
+        LCard {
+            Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+                LText("Little Cloud ${platform.appVersion}", 17)
+                LText("Ecce nubecula parva quasi vestigium hominis. A companion for the Little Office and the rule of prayer, made for traditional Catholics and Carmelite tertiaries.", 14, Lc.muted, lineHeight = 1.4f)
+            }
+            HLine()
+            RowItem(Modifier.padding(start = 16.dp, end = 12.dp), onClick = {
+                val body = "\n\n\n— \nLittle Cloud ${platform.appVersion} · ${platform.deviceInfo} · rubrics ${if (state.pre1955) "before 1955" else "1962"}"
+                runCatching { uri.openUri("mailto:$FEEDBACK_EMAIL?subject=${encode("Little Cloud feedback")}&body=${encode(body)}") }
+            }) {
+                Column(Modifier.weight(1f).padding(vertical = 12.dp)) {
+                    LText("Send feedback", 17)
+                    LText("Corrections, suggestions or a problem: opens your mail app", 14, Lc.muted)
+                }
+                Ic(Res.drawable.ic_chevron_right, 18.dp, Lc.muted)
+            }
+        }
+    }
+}
+
+/** Percent-encoding for a mailto: link. */
+private fun encode(s: String): String = buildString {
+    for (b in s.encodeToByteArray()) {
+        val c = (b.toInt() and 0xFF)
+        val ch = c.toChar()
+        if (ch.isLetterOrDigit() && c < 128 || ch in "-._~") append(ch)
+        else append('%').append(c.toString(16).uppercase().padStart(2, '0'))
+    }
+}
+

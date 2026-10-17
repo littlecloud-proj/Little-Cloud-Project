@@ -38,6 +38,11 @@ expect fun readDataFile(name: String): String
 
 /** Things only the phone itself can do: print, ring a bell for silent prayer. */
 interface PlatformActions {
+    /** The app's version, e.g. "0.8". */
+    val appVersion: String
+    /** The phone and its system, e.g. "Pixel 8 · Android 15", for feedback emails. */
+    val deviceInfo: String
+
     /** Whether printing is available on this phone. */
     val canPrint: Boolean
     fun print(state: AppState, evening: Boolean)
