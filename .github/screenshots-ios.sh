@@ -7,8 +7,8 @@ DEV=$(xcrun simctl list devices available -j | python3 -c "import json,sys; d=js
 xcrun simctl boot "$DEV"; xcrun simctl bootstatus "$DEV" -b
 xcrun simctl install "$DEV" "$APP"
 shoot() { # name, open-request, seconds to wait
-  xcrun simctl terminate "$DEV" com.littlecloud.app 2>/dev/null
-  SIMCTL_CHILD_LC_OPEN="$2" xcrun simctl launch "$DEV" com.littlecloud.app
+  xcrun simctl terminate "$DEV" org.littlecloudproject.app 2>/dev/null
+  SIMCTL_CHILD_LC_OPEN="$2" xcrun simctl launch "$DEV" org.littlecloudproject.app
   sleep "${3:-8}"
   xcrun simctl io "$DEV" screenshot "shots/ios-$1.png"
 }

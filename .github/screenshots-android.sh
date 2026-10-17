@@ -3,10 +3,10 @@
 set -x
 mkdir -p shots
 adb install -r app/build/outputs/apk/debug/app-debug.apk
-adb shell pm grant com.littlecloud.app android.permission.POST_NOTIFICATIONS || true
+adb shell pm grant org.littlecloudproject.app android.permission.POST_NOTIFICATIONS || true
 shoot() { # name, open-request, seconds to wait
-  adb shell am force-stop com.littlecloud.app
-  adb shell am start -n com.littlecloud.app/.MainActivity --es open "$2"
+  adb shell am force-stop org.littlecloudproject.app
+  adb shell am start -n org.littlecloudproject.app/com.littlecloud.app.MainActivity --es open "$2"
   sleep "${3:-8}"
   adb exec-out screencap -p > "shots/android-$1.png"
 }

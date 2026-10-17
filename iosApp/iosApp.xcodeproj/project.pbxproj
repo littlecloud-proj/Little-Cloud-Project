@@ -318,7 +318,7 @@
 					"-framework",
 					LittleCloudKit,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.littlecloud.app;
+				PRODUCT_BUNDLE_IDENTIFIER = org.littlecloudproject.app;
 				PRODUCT_NAME = LittleCloud;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -347,7 +347,7 @@
 					"-framework",
 					LittleCloudKit,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.littlecloud.app;
+				PRODUCT_BUNDLE_IDENTIFIER = org.littlecloudproject.app;
 				PRODUCT_NAME = LittleCloud;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

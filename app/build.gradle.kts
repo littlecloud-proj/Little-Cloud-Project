@@ -54,7 +54,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.littlecloud.app"
+        applicationId = "org.littlecloudproject.app"
         minSdk = 26
         targetSdk = 35
         versionCode = 16
