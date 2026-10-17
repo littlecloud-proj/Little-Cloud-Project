@@ -135,12 +135,11 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
                         runCatching { LittleOffice.blocks(officeDate, selected.id, pre1955) }.getOrDefault(emptyList())
                     }
                 }
-                val es = state.vernacular == "es"
-                // No approved Spanish text of the Office is on file, so Spanish shows the Latin.
-                val showLatin = state.officeLang != "english" || es
-                val showEnglish = state.officeLang != "latin" && !es
-                if (es && state.officeLang != "latin") {
-                    LText("Aún no hay una traducción española aprobada del Oficio; se muestra el latín.", 14, Lc.muted)
+                val show = laEn(state)
+                val showLatin = show.latin
+                val showEnglish = show.english
+                if (show.englishForSpanish) {
+                    LText(NO_SPANISH_NOTE, 14, Lc.muted)
                     Spacer(Modifier.height(12.dp))
                 }
                 if (blocks.isEmpty()) LText("…", 18, Lc.muted)

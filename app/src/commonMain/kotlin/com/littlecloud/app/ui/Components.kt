@@ -296,10 +296,13 @@ fun CollectText(state: com.littlecloud.app.data.AppState, date: com.littlecloud.
         LText("No collect is said today.", size - 2, Lc.muted)
         return
     }
-    val lang = state.officeLang
-    val es = state.vernacular == "es"
-    val showLa = lang != "english" || es
-    val showEn = lang != "latin" && !es
+    val show = laEn(state)
+    val showLa = show.latin
+    val showEn = show.english
+    if (show.englishForSpanish) {
+        LText(NO_SPANISH_NOTE, 13, Lc.muted, lineHeight = 1.35f)
+        Spacer(Modifier.height(6.dp))
+    }
     if (showLa) LText(col.la, size, lineHeight = 1.45f)
     if (showLa && showEn) Spacer(Modifier.height(8.dp))
     if (showEn) LText(col.en, size - 1, if (showLa) Lc.muted else Lc.ink, lineHeight = 1.45f)

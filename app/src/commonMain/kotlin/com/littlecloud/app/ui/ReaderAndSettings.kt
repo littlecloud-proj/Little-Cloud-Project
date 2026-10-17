@@ -30,6 +30,22 @@ import com.littlecloud.app.data.PrayerItem
 import com.littlecloud.app.data.SpanishPrayers
 
 /** "Latin / English / Both" or "Latín / Español / Ambos", following the vernacular setting. */
+/**
+ * What to show of a text that exists in Latin and English only (the collect, the readings,
+ * the Office). In Spanish the vernacular choice shows the English, clearly marked, rather
+ * than repeating the Latin, until a public-domain Spanish text is on file.
+ */
+data class LaEn(val latin: Boolean, val english: Boolean, val englishForSpanish: Boolean)
+
+fun laEn(state: AppState) = LaEn(
+    latin = state.officeLang != "english",
+    english = state.officeLang != "latin",
+    englishForSpanish = state.vernacular == "es" && state.officeLang != "latin",
+)
+
+/** The note shown where English stands in for Spanish. */
+const val NO_SPANISH_NOTE = "Aún no hay traducción española de dominio público de este texto; se muestra la inglesa."
+
 fun langOptions(state: AppState): List<Pair<String, String>> =
     if (state.vernacular == "es") listOf("latin" to "Latín", "english" to "Español", "both" to "Ambos")
     else listOf("latin" to "Latin", "english" to "English", "both" to "Both")

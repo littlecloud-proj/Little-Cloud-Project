@@ -36,8 +36,7 @@ private fun label(r: Readings.Reading) = when {
 fun ReadingsCard(state: AppState, onOpen: () -> Unit) {
     val list = rememberReadings(state, state.today) ?: return
     if (list.isEmpty()) return
-    val es = state.vernacular == "es"
-    val english = state.officeLang == "english" && !es
+    val english = state.officeLang == "english"
     LCard(padding = 20.dp) {
         Eyebrow("Today’s readings")
         list.forEachIndexed { i, r ->
@@ -59,9 +58,9 @@ fun ReadingsCard(state: AppState, onOpen: () -> Unit) {
 @Composable
 fun ReadingsScreen(state: AppState, onBack: () -> Unit) {
     val list = rememberReadings(state, state.today)
-    val es = state.vernacular == "es"
-    val showLatin = state.officeLang != "english" || es
-    val showEnglish = state.officeLang != "latin" && !es
+    val show = laEn(state)
+    val showLatin = show.latin
+    val showEnglish = show.english
     val size = state.readingSize
 
     Column(Modifier.fillMaxSize()) {
@@ -81,7 +80,7 @@ fun ReadingsScreen(state: AppState, onBack: () -> Unit) {
                 Heading(state.dayInfo(state.today).title, 28)
             }
             Segmented(langOptions(state), state.officeLang) { state.updateOfficeLang(it) }
-            if (es) LText("Aún no hay una traducción española de dominio público de las lecturas; se muestra el latín.", 14, Lc.muted)
+            if (show.englishForSpanish) LText(NO_SPANISH_NOTE, 14, Lc.muted)
             when {
                 list == null -> LText("…", 18, Lc.muted)
                 list.isEmpty() -> LText("No readings are on file for this day.", 16, Lc.muted)
