@@ -45,6 +45,41 @@ interface PlatformActions {
     /** Sets a bell to ring after [minutes] of silent prayer; returns when it will ring (epoch ms). */
     fun startPrayerTimer(minutes: Int): Long
     fun cancelPrayerTimer()
+
+    val bells: BellSystem
+}
+
+/** How each phone schedules and sounds the bells. */
+interface BellSystem {
+    data class Sound(val key: String, val label: String, val note: String)
+
+    /** The bundled bell sounds a bell may use. */
+    val sounds: List<Sound>
+    fun label(key: String): String
+
+    /** Whether a bell can ring like an alarm, through silent mode and over the lock screen. */
+    val canRingLoud: Boolean
+
+    /** The small print under the list of bells. */
+    val footnote: String
+
+    /** Schedules every enabled bell again, after a change or when the app opens. */
+    fun reschedule()
+
+    /** Rings a bell at once, as it will ring when it is due. */
+    fun ringNow(name: String, sound: String)
+
+    /** Plays a short preview of a sound (null stops it); stops when the screen goes away. */
+    @Composable
+    fun rememberPlayer(): (String?) -> Unit
+
+    /** A way to choose any sound on the phone, or null where there is none. */
+    @Composable
+    fun rememberCustomPicker(onPicked: (String) -> Unit): (() -> Unit)?
+
+    /** Cards asking for permissions the bells need, if any are missing. */
+    @Composable
+    fun Notices(state: AppState)
 }
 
 val LocalPlatform = staticCompositionLocalOf<PlatformActions> { error("PlatformActions not provided") }

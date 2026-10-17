@@ -5,6 +5,11 @@ import LittleCloudKit
 struct iOSApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
+    init() {
+        // Lets a tapped bell open its screen, and lays out the bells for the coming days.
+        MainViewControllerKt.setUpNotifications()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()

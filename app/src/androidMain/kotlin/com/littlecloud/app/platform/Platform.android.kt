@@ -92,6 +92,7 @@ actual fun PlatformEffects(dark: Boolean) {
 
 /** Printing and the prayer timer, through Android's print service and alarms. */
 class AndroidPlatform(private val activity: Activity) : PlatformActions {
+    override val bells = com.littlecloud.app.bells.AndroidBells(activity)
     override val canPrint = true
     override fun print(state: AppState, evening: Boolean) = PrayerPrinter.print(activity, state, evening)
     override fun startPrayerTimer(minutes: Int): Long = BellScheduler.startPrayerTimer(activity.applicationContext, minutes)

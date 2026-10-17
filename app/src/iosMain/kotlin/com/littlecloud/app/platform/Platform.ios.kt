@@ -1,6 +1,8 @@
 package com.littlecloud.app.platform
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import com.littlecloud.app.bells.IosBells
 import com.littlecloud.app.data.AppState
 import com.littlecloud.app.resources.Res
 import com.littlecloud.app.time.nowMillis
@@ -11,12 +13,6 @@ import platform.Foundation.NSUserDefaults
 import platform.UIKit.UIMarkupTextPrintFormatter
 import platform.UIKit.UIPrintInfo
 import platform.UIKit.UIPrintInteractionController
-import platform.UserNotifications.UNAuthorizationOptionAlert
-import platform.UserNotifications.UNAuthorizationOptionSound
-import platform.UserNotifications.UNMutableNotificationContent
-import platform.UserNotifications.UNNotificationRequest
-import platform.UserNotifications.UNNotificationSound
-import platform.UserNotifications.UNTimeIntervalNotificationTrigger
 import platform.UserNotifications.UNUserNotificationCenter
 
 private class UserDefaultsPrefs : Prefs {
@@ -57,7 +53,16 @@ actual fun PlatformBackHandler(enabled: Boolean, onBack: () -> Unit) {
 }
 
 @Composable
-actual fun PlatformEffects(dark: Boolean) {}
+actual fun PlatformEffects(dark: Boolean) {
+    // Ask once for permission to show the bells as notifications.
+    LaunchedEffect(Unit) {
+        val prefs = appPrefs()
+        if (!prefs.getBoolean("askedNotif", false)) {
+            prefs.edit().putBoolean("askedNotif", true).apply()
+            IosBells.requestPermission()
+        }
+    }
+}
 
 /** Printing through AirPrint, and the prayer timer as a local notification. */
 object IosPlatform : PlatformActions {
@@ -72,16 +77,10 @@ object IosPlatform : PlatformActions {
         pc.presentAnimated(true, completionHandler = null)
     }
 
+    override val bells = IosBells
+
     override fun startPrayerTimer(minutes: Int): Long {
-        val center = UNUserNotificationCenter.currentNotificationCenter()
-        center.requestAuthorizationWithOptions(UNAuthorizationOptionAlert or UNAuthorizationOptionSound) { _, _ -> }
-        val content = UNMutableNotificationContent().apply {
-            setTitle("Mental prayer")
-            setBody("Your time of prayer has ended.")
-            setSound(UNNotificationSound.defaultSound)
-        }
-        val trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeInterval(minutes * 60.0, repeats = false)
-        center.addNotificationRequest(UNNotificationRequest.requestWithIdentifier(TIMER_ID, content, trigger), null)
+        IosBells.prayerTimer(minutes, TIMER_ID)
         return nowMillis() + minutes * 60_000L
     }
 
