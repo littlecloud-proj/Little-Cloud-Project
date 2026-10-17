@@ -8,7 +8,7 @@ The default calendar follows the pre-1955 (Divino Afflatu) rubrics, and the 1962
 The app works fully offline and has no internet permission.
 
 ## Status
-- **Android:** 0.7, built from the shared Kotlin Multiplatform code.
+- **Android:** 0.8, built from the shared Kotlin Multiplatform code.
 - **iPhone:** the same screens run on iOS. On iPhone the bells come as notifications, so they cannot ring through silent mode.
 
 ## Sources
