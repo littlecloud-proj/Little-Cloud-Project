@@ -128,11 +128,11 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
                 Spacer(Modifier.height(14.dp))
                 Segmented(langOptions(state), state.officeLang) { state.updateOfficeLang(it) }
                 Spacer(Modifier.height(16.dp))
-                val pre1955 = state.pre1955
+                val rubrics = state.rubrics
                 val officeDate = selected.date
-                val blocks by produceState(initialValue = emptyList<LittleOffice.Block>(), officeDate, selected.id, pre1955) {
+                val blocks by produceState(initialValue = emptyList<LittleOffice.Block>(), officeDate, selected.id, rubrics) {
                     value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
-                        runCatching { LittleOffice.blocks(officeDate, selected.id, pre1955) }.getOrDefault(emptyList())
+                        runCatching { LittleOffice.blocks(officeDate, selected.id, rubrics) }.getOrDefault(emptyList())
                     }
                 }
                 val show = laEn(state)

@@ -5,20 +5,27 @@ import kotlin.concurrent.Volatile
 import kotlinx.serialization.json.*
 
 /**
- * The traditional Roman calendar under the rubrics in force before 1955 (Divino Afflatu,
- * as of 1954), as kept by CMRI and other communities using the older books.
+ * The traditional Roman calendar under the older rubrics, read from a bundled file.
  *
- * Every day from 2026 to 2050 was rendered from the Divinum Officium Project and is stored
- * in assets/calendar1954.json: the office of the day, its rank and colour, the
- * commemorations at Lauds, and the collect.
+ * [Pius1955]: the rubrics of Pope Pius XII (the simplification of 1955 and the restored Holy
+ * Week of 1956), as kept by the CMRI. [Before1955]: the rubrics in force before 1955
+ * (Divino Afflatu, as of 1954).
+ *
+ * Every day from 2026 to 2050 was rendered from the Divinum Officium Project ("Reduced - 1955"
+ * and "Divino Afflatu - 1954") and is stored in calendar1955.json / calendar1954.json: the office
+ * of the day, its rank and colour, the commemorations at Lauds, and the collect.
  */
-object Calendar1954 {
-    const val FIRST_YEAR = 2026
-    const val LAST_YEAR = 2050
+class OlderCalendar private constructor(private val file: String, private val pre1955: Boolean) {
+    companion object {
+        const val FIRST_YEAR = 2026
+        const val LAST_YEAR = 2050
+        val Pius1955 = OlderCalendar("calendar1955.json", pre1955 = false)
+        val Before1955 = OlderCalendar("calendar1954.json", pre1955 = true)
+    }
 
     @Volatile private var data: JsonObject? = null
 
-    private fun load(): JsonObject = data ?: parse("calendar1954.json").also { data = it }
+    private fun load(): JsonObject = data ?: parse(file).also { data = it }
 
     private fun entry(d: LocalDate): JsonArray? {
         if (d.year !in FIRST_YEAR..LAST_YEAR) return null
@@ -43,7 +50,7 @@ object Calendar1954 {
             commemorations = comms,
             carmelite = if (carmelite) Calendar1962.carmeliteFor(d) else null,
             season = Calendar1962.seasonOf(d),
-            fast = Calendar1962.fasting(d, discipline, pre1955 = true),
+            fast = Calendar1962.fasting(d, discipline, pre1955),
             rankText = e.s(1),
         )
     }

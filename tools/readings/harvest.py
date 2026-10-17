@@ -1,7 +1,7 @@
 import subprocess, re, html, json, sys, datetime, os, glob
 from concurrent.futures import ThreadPoolExecutor
 CGI = glob.glob('/tmp/do/*/web/cgi-bin/missa')[0]
-VERS = {'1954': 'Divino%20Afflatu%20-%201954', '1962': 'Rubrics%201960%20-%201960'}
+VERS = {'1954': 'Divino%20Afflatu%20-%201954', '1955': 'Reduced%20-%201955', '1962': 'Rubrics%201960%20-%201960'}
 
 def txt(x):
     x = re.sub(r'<BR\s*/?>', '\n', x, flags=re.I); x = re.sub(r'<[^>]+>', '', x)
@@ -111,7 +111,7 @@ if __name__ == '__main__':
     jobs = []
     d = datetime.date(y0, 1, 1)
     while d <= datetime.date(y1, 12, 31):
-        for v in VERS:
+        for v in os.environ.get('VERSIONS', ','.join(VERS)).split(','):
             if (d.isoformat(), v) not in done: jobs.append((d, v))
         d += datetime.timedelta(1)
     print('todo', len(jobs), flush=True)

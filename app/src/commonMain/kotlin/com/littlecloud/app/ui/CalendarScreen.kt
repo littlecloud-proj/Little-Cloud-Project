@@ -128,7 +128,7 @@ fun CalendarScreen(state: AppState, scroll: androidx.compose.foundation.ScrollSt
                 RowItem(Modifier.padding(start = 16.dp, end = 8.dp)) {
                     Column(Modifier.weight(1f).padding(vertical = 10.dp)) {
                         LText("Carmelite proper", 17)
-                        LText("Show feasts of the Order alongside the 1962 calendar", 14, Lc.muted)
+                        LText("Show feasts of the Order alongside the calendar", 14, Lc.muted)
                     }
                     LSwitch(state.carmelite) { state.updateCarmelite(it) }
                 }

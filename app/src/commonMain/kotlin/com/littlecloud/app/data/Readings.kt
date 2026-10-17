@@ -26,9 +26,10 @@ object Readings {
     private fun load(): JsonObject = data ?: parse("readings.json").also { data = it }
 
     /** The day's Epistle and Gospel, in that order. Empty outside 2026–2050. */
-    fun forDate(d: LocalDate, pre1955: Boolean): List<Reading> {
+    /** [rubrics] is "1954", "1955" or "1962". */
+    fun forDate(d: LocalDate, rubrics: String): List<Reading> {
         val root = load()
-        val year = root.getValue("days").jsonObject[if (pre1955) "1954" else "1962"]
+        val year = root.getValue("days").jsonObject[rubrics]
             ?.jsonObject?.get(d.year.toString()) as? JsonArray ?: return emptyList()
         val ids = year.getOrNull(d.dayOfYear - 1) as? JsonArray ?: return emptyList()
         val texts = root.getValue("texts").jsonArray

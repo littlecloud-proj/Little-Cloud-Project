@@ -26,6 +26,7 @@ import com.littlecloud.app.resources.*
 import com.littlecloud.app.data.AppState
 import com.littlecloud.app.data.Discipline
 import com.littlecloud.app.data.PrayerBook
+import com.littlecloud.app.data.rubricsLabel
 import com.littlecloud.app.data.PrayerItem
 import com.littlecloud.app.data.SpanishPrayers
 
@@ -293,11 +294,14 @@ fun SettingsScreen(state: AppState, onBack: () -> Unit) {
             }
             Column {
                 SectionLabel("Rubrics")
-                Segmented(listOf("1954" to "Before 1955", "1962" to "1962"), state.rubrics) { state.updateRubrics(it) }
+                Segmented(listOf("1955" to "1955", "1954" to "Before 1955", "1962" to "1962"), state.rubrics) { state.updateRubrics(it) }
                 Spacer(Modifier.height(8.dp))
                 LText(
-                    if (state.pre1955) "The calendar, ranks and collects as before the reforms of 1955 (Divino Afflatu), as kept by CMRI and others using the older books."
-                    else "The calendar, ranks and collects of the 1962 books (rubrics of 1960).",
+                    when (state.rubrics) {
+                        "1955" -> "The rubrics of Pope Pius XII: the simplification of 1955 and the restored Holy Week of 1956, as kept by the CMRI. The calendar, collects, readings and Little Office follow them."
+                        "1954" -> "The rubrics before the reforms of 1955 (Divino Afflatu). The calendar, collects, readings and Little Office follow them."
+                        else -> "The rubrics of 1960, as in the 1962 books. The calendar, collects, readings and Little Office follow them."
+                    },
                     14, Lc.muted,
                 )
             }
@@ -332,7 +336,7 @@ fun SettingsScreen(state: AppState, onBack: () -> Unit) {
                     Column(Modifier.weight(1f).padding(vertical = 10.dp)) {
                         LText("Carmelite proper", 17)
                         LText(
-                            if (state.pre1955) "Feasts of the Discalced Carmelites on Today and the Calendar. Taken from the 1962 Carmelite calendar; not yet checked against a pre-1955 Carmelite Ordo."
+                            if (state.rubrics != "1962") "Feasts of the Discalced Carmelites on Today and the Calendar. Taken from the 1962 Carmelite calendar; not yet checked against an older Carmelite Ordo."
                             else "Feasts of the Order on Today and the Calendar",
                             14, Lc.muted,
                         )
@@ -370,7 +374,7 @@ private fun AboutSection(state: AppState) {
             }
             HLine()
             RowItem(Modifier.padding(start = 16.dp, end = 12.dp), onClick = {
-                val body = "\n\n\n— \nLittle Cloud ${platform.appVersion} · ${platform.deviceInfo} · rubrics ${if (state.pre1955) "before 1955" else "1962"}"
+                val body = "\n\n\n— \nLittle Cloud ${platform.appVersion} · ${platform.deviceInfo} · rubrics ${rubricsLabel(state.rubrics)}"
                 runCatching { uri.openUri("mailto:$FEEDBACK_EMAIL?subject=${encode("Little Cloud feedback")}&body=${encode(body)}") }
             }) {
                 Column(Modifier.weight(1f).padding(vertical = 12.dp)) {

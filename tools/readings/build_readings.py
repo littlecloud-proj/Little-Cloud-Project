@@ -1,5 +1,5 @@
 """Builds readings.json: the Epistle (lessons) and Gospel of every day, 2026-2050, for the
-rubrics before 1955 and of 1962. Latin from Divinum Officium; English from the Douay-Rheims
+rubrics before 1955, of 1955 (Pius XII) and of 1962. Latin from Divinum Officium; English from the Douay-Rheims
 (Gutenberg #8300) by the citation, with the liturgical opening ("At that time", "Brethren")."""
 import json, re, sys, collections
 DR = json.load(open('/tmp/rd/bible/dr.json'))
@@ -62,7 +62,7 @@ def english(cit, la_body, kind):
     if not txt or len(txt) < len(vs) * 0.7: return None
     body = ' '.join(txt)
     head = la_body.strip()
-    if kind == 'E' and head.startswith(('In illo témpore', 'In illo tempore')):
+    if kind == 'E' and head.startswith(('In illo témpore', 'In illo tempore')) and not body.startswith(('At that time', 'And at that time')):
         body = 'At that time: ' + body
     elif head.startswith('Fratres'):
         body = 'Brethren: ' + body
@@ -103,19 +103,20 @@ def en_title(r, la_title, cit):
 
 if __name__ == '__main__':
     src = sys.argv[1]
-    texts, index, out = [], {}, {'1954': {}, '1962': {}}
+    texts, index, out = [], {}, {}
     miss = collections.Counter(); total = 0
     days = collections.defaultdict(dict)
     for l in open(src):
         j = json.loads(l)
         if 'r' not in j: continue
         days[j['v']][j['d']] = j['r']
-    # The Easter Vigil under 1962 is set out so that only the Gospel is found; its Epistle
-    # (Col 3:1-4) is the same as before 1955.
-    for d, rs in days['1962'].items():
-        if not any(r['k'] == 'L' for r in rs):
-            old = [r for r in pick(days['1954'].get(d, [])) if r['k'] == 'L' and r['la'][1].startswith('Col 3:1')]
-            if old: days['1962'][d] = old + rs
+    # The restored Easter Vigil (1956 and 1962) is set out so that only the Gospel is found;
+    # its Epistle (Col 3:1-4) is the same as before 1955.
+    for v in ('1955', '1962'):
+        for d, rs in days[v].items():
+            if not any(r['k'] == 'L' for r in rs):
+                old = [r for r in pick(days['1954'].get(d, [])) if r['k'] == 'L' and r['la'][1].startswith('Col 3:1')]
+                if old: days[v][d] = old + rs
     for v, dd in days.items():
         years = {}
         for d in sorted(dd):

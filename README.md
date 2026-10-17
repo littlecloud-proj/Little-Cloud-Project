@@ -3,12 +3,13 @@
 *Ecce nubecula parva quasi vestigium hominis.* (3 Kings 18:44)
 
 A quiet prayer companion for traditional Catholics and Carmelite tertiaries.
-It has the Little Office of the Blessed Virgin Mary, the day's collect, Epistle and Gospel, a prayer book in Latin, English and Spanish, bells, and a traditional calendar.
-The default calendar follows the pre-1955 (Divino Afflatu) rubrics, and the 1962 rubrics are available as an option.
+It has the Little Office of the Blessed Virgin Mary, the day's collect, Epistle and Gospel, a prayer book in Latin and English, bells, and a traditional calendar.
+By default it follows the rubrics of Pope Pius XII (the simplification of 1955 and the restored Holy Week of 1956), as kept by the CMRI. The rubrics before 1955 (Divino Afflatu) and those of 1962 are available in Settings.
+The calendar, collects, readings and Little Office all follow the rubrics chosen.
 The app works fully offline and has no internet permission.
 
 ## Status
-- **Android:** 0.8, built from the shared Kotlin Multiplatform code.
+- **Android:** 0.9, built from the shared Kotlin Multiplatform code.
 - **iPhone:** the same screens run on iOS. On iPhone the bells come as notifications, so they cannot ring through silent mode.
 
 ## Sources

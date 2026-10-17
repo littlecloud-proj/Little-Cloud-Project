@@ -178,6 +178,12 @@ object Store {
  */
 const val SPANISH_ENABLED = false
 
+/** The rubrics the app can follow: Pius XII (1955, the default), before 1955, and 1962. */
+val RUBRICS = listOf("1955", "1954", "1962")
+
+/** How each choice of rubrics is named in the app. */
+fun rubricsLabel(r: String) = when (r) { "1955" -> "1955 (Pius XII)"; "1954" -> "before 1955"; else -> "1962" }
+
 /** UI state, backed by the saved settings. */
 class AppState {
     private val prefs = Store.prefs()
@@ -191,14 +197,21 @@ class AppState {
     /** Vernacular for prayers and the Office: "en" or "es". */
     var vernacular by mutableStateOf(if (SPANISH_ENABLED) prefs.getString("vernacular", "en") ?: "en" else "en"); private set
     var triduum by mutableStateOf(prefs.getBoolean("triduum", true)); private set
-    /** "1954": the rubrics before 1955 (Divino Afflatu). "1962": the rubrics of 1960/62. */
-    var rubrics by mutableStateOf(prefs.getString("rubrics", "1954") ?: "1954"); private set
+    /**
+     * "1955": the rubrics of Pius XII (1955, with the restored Holy Week of 1956), as kept by the
+     * CMRI; the default. "1954": the rubrics before 1955 (Divino Afflatu). "1962": those of 1960/62.
+     */
+    var rubrics by mutableStateOf(
+        (prefs.getString("rubrics", "1955") ?: "1955").takeIf { it in RUBRICS } ?: "1955"
+    ); private set
     val pre1955: Boolean get() = rubrics == "1954"
+    private val olderCalendar: OlderCalendar?
+        get() = when (rubrics) { "1954" -> OlderCalendar.Before1955; "1955" -> OlderCalendar.Pius1955; else -> null }
 
     init {
         // Read the older calendar in the background, so the first screen does not wait for it.
         CoroutineScope(Dispatchers.Default).launch {
-            runCatching { Calendar1954.day(LocalDate.now(), Discipline.UNIVERSAL_1917, false) }
+            runCatching { olderCalendar?.day(LocalDate.now(), Discipline.UNIVERSAL_1917, false) }
         }
     }
 
@@ -332,18 +345,18 @@ class AppState {
     }
 
     fun dayInfo(d: LocalDate): LiturgicalDay =
-        (if (pre1955) Calendar1954.day(d, discipline, carmelite) else null)
+        olderCalendar?.day(d, discipline, carmelite)
             ?: Calendar1962.day(d, discipline, carmelite)
 
     /** The Epistle and Gospel of the day's Mass, by the rubrics chosen. */
-    fun readings(d: LocalDate): List<Readings.Reading> = Readings.forDate(d, pre1955)
+    fun readings(d: LocalDate): List<Readings.Reading> = Readings.forDate(d, rubrics)
 
     /** Text size for the readings, shared with mental prayer. */
     var readingSize by mutableStateOf(prefs.getInt("readSize", 18)); private set
     fun updateReadingSize(v: Int) { readingSize = v; prefs.edit().putInt("readSize", v).apply() }
 
     fun collect(d: LocalDate): Collects.Collect? =
-        if (pre1955) Calendar1954.collect(d) else Collects.forDate(d)
+        olderCalendar.let { if (it != null) it.collect(d) else Collects.forDate(d) }
 
     // ---- The user's edits to prayer-book texts --------------------------------------------
 

@@ -1,5 +1,5 @@
 import json,re,sys,glob
-sys.path.insert(0,'/tmp/da')
+sys.path.insert(0,'/tmp/d55')
 from titles import title_en, title_la, sec
 from latin_en import tr
 K=open(glob.glob('/mnt/user-data/outputs/LittleCloud/app/src/main/java/com/littlecloud/app/data/Sanctoral1962.kt')[0],encoding='utf-8').read()
@@ -30,6 +30,15 @@ def rank(r, la, f):
         m=re.search(r'Octava (privilegiata|communi|simplici)?',r,re.I)
         kind={'privilegiata':'privileged ','communi':'common ','simplici':'simple '}.get((m.group(1) or '').lower(),'') if m else ''
         en+=f' with {kind}octave'
+    if V55:
+        # 1955: semidoubles become simples; Sundays and the I and II class keep their class as doubles.
+        if re.match(r'Semidouble of the (I|II) class', en) or la.startswith('Dominica'):
+            en = en.replace('Semidouble', 'Double')
+        elif en.startswith('Semidouble'):
+            en = 'Simple' + en[len('Semidouble'):]
+        # Only Christmas, Easter and Pentecost keep their octaves.
+        if not re.search(r'Pasch|Resurrection|Pentecost|Nativitate Domini', la):
+            en = re.sub(r' with \w* ?octave$', '', en)
     if la.startswith('Dominica'):
         sund='Sunday'
         if cls==4: cls=2
@@ -37,6 +46,8 @@ def rank(r, la, f):
     return en,cls
 def name_en(f, la=None):
     la=la or title_la(f)
+    fx=fixed_name(la)
+    if fx: return fx
     if re.search(r'C10',f) or re.search(r'Sanctæ Mariæ Sabbato|Sancta Maria Sabbato',la or ''): return 'Saturday of Our Lady'
     e=title_en(f)
     if e: return e
@@ -51,6 +62,27 @@ def name_en(f, la=None):
     if m and m.group(1) in S62 and not re.search(r'infra|Octav|Vigil',la or ''): return S62[m.group(1)]
     return None
 MISS={}
+import os
+V55 = os.environ.get('RUBRICS') == '1955'
+ORD = {'Secunda':2,'Tertia':3,'Quarta':4,'Quinta':5,'Sexta':6,'Septima':7,'Octava':8,'Nona':9,'Decima':10,'Undecima':11,'Duodecima':12}
+NAMES = {'Dominica post Ascensionem':'Sunday after the Ascension',
+ 'Dominica I Passionis':'1st Sunday of the Passion (Passion Sunday)',
+ 'Dominica II Passionis seu in Palmis':'2nd Sunday of the Passion, or Palm Sunday',
+ 'Feria VI post Ascensionem':'Friday after the Ascension',
+ 'Feria II post Ascensionem':'Monday after the Ascension',
+ 'Feria III post Ascensionem':'Tuesday after the Ascension',
+ 'Feria IV post Ascensionem':'Wednesday after the Ascension',
+ 'Feria Secunda Hebdomadæ Sanctæ':'Monday of Holy Week',
+ 'Feria Tertia Hebdomadæ Sanctæ':'Tuesday of Holy Week',
+ 'Feria Quarta Hebdomadæ Sanctæ':'Wednesday of Holy Week',
+ 'Feria Quinta in Cena Domini':'Holy Thursday of the Lord\'s Supper',
+ 'Feria Sexta in Passione et Morte Domini':'Good Friday of the Passion and Death of the Lord'}
+def fixed_name(la):
+    la=(la or '').strip()
+    if la in NAMES: return NAMES[la]
+    m=re.match(r'^Die (\w+) Januarii$',la)
+    if m and m.group(1) in ORD: return f'Feria · {ORD[m.group(1)]} January'
+    return None
 def build(rows):
     days=[];idx={};texts=[];tidx={};years={}
     for r in rows:

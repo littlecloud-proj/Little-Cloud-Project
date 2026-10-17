@@ -6,20 +6,20 @@ import kotlin.concurrent.Volatile
 import kotlinx.serialization.json.*
 
 /**
- * The Little Office of the Blessed Virgin Mary (rubrics of 1960), rendered from the
+ * The Little Office of the Blessed Virgin Mary, by the rubrics chosen, rendered from the
  * Divinum Officium Project in Latin and English. Stored per seasonal form and hour
  * in assets/office.json.
  */
 object LittleOffice {
     data class Block(val headLa: String?, val headEn: String?, val la: List<String>, val en: List<String>)
 
-    @Volatile private var office: JsonObject? = null
-    @Volatile private var office1954: JsonObject? = null
+    private val cache = mutableMapOf<String, JsonObject>()
 
-    /** office.json follows the rubrics of 1960; office1954.json those before 1955. */
-    private fun load(pre1955: Boolean): JsonObject =
-        if (pre1955) office1954 ?: parse("office1954.json").also { office1954 = it }
-        else office ?: parse("office.json").also { office = it }
+    /** office.json follows the rubrics of 1960, office1955.json those of 1955, office1954.json those before. */
+    private fun load(rubrics: String): JsonObject {
+        val file = when (rubrics) { "1954" -> "office1954.json"; "1955" -> "office1955.json"; else -> "office.json" }
+        return synchronized(cache) { cache[file] } ?: parse(file).also { synchronized(cache) { cache[file] = it } }
+    }
 
     fun key(d: LocalDate, hour: String): String {
         val adv = Calendar1962.adventStart(d.year)
@@ -44,8 +44,8 @@ object LittleOffice {
         return "$season|$tempus|matins|$group"
     }
 
-    fun blocks(d: LocalDate, hour: String, pre1955: Boolean = false): List<Block> {
-        val root = load(pre1955)
+    fun blocks(d: LocalDate, hour: String, rubrics: String): List<Block> {
+        val root = load(rubrics)
         var k = key(d, hour)
         // Christmastide falling in Septuagesima uses the Christmas form with the Lenten ending.
         if (k !in root) k = k.replace("nat|norm", "nat|sept").replace("nat|pasch", "nat|sept")
