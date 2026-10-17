@@ -61,6 +61,17 @@ android {
         versionName = "0.8.3"
     }
 
+    // One shared debug key in the repository, so test builds from any machine (Android Studio
+    // or CI) install over each other. Release builds will use a private key kept out of git.
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
