@@ -329,6 +329,13 @@ class AppState {
         (if (pre1955) Calendar1954.day(d, discipline, carmelite) else null)
             ?: Calendar1962.day(d, discipline, carmelite)
 
+    /** The Epistle and Gospel of the day's Mass, by the rubrics chosen. */
+    fun readings(d: LocalDate): List<Readings.Reading> = Readings.forDate(d, pre1955)
+
+    /** Text size for the readings, shared with mental prayer. */
+    var readingSize by mutableStateOf(prefs.getInt("readSize", 18)); private set
+    fun updateReadingSize(v: Int) { readingSize = v; prefs.edit().putInt("readSize", v).apply() }
+
     fun collect(d: LocalDate): Collects.Collect? =
         if (pre1955) Calendar1954.collect(d) else Collects.forDate(d)
 

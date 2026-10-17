@@ -20,6 +20,7 @@ private sealed interface Overlay {
     data class Reader(val items: List<PrayerItem>, val start: Int, val keyPrefix: String?) : Overlay
     data object Intimacy : Overlay
     data object Settings : Overlay
+    data object Readings : Overlay
 }
 
 @Composable
@@ -59,6 +60,7 @@ private fun AppContent(state: AppState, openRequest: MutableState<String?>) {
                 }
                 override fun openIntimacy() { overlay = Overlay.Intimacy }
                 override fun openSettings() { overlay = Overlay.Settings }
+                override fun openReadings() { overlay = Overlay.Readings }
                 override fun arrange(evening: Boolean) { eveningTab = evening; overlay = null; setTab(Tab.PRAYERS) }
                 fun setTab(t: Tab) { tab = t }
             }
@@ -72,6 +74,13 @@ private fun AppContent(state: AppState, openRequest: MutableState<String?>) {
                 o == "evening" -> nav.arrange(true)
                 o.startsWith("prayer:") -> nav.openPrayer(PrayerItem("", prayerId = o.removePrefix("prayer:")), null)
                 o == "settings" -> nav.openSettings()
+                o == "readings" -> nav.openReadings()
+                // "scroll:900" opens Today partway down (used for screenshots).
+                o.startsWith("scroll:") -> {
+                    nav.goTab(Tab.TODAY)
+                    kotlinx.coroutines.delay(600)
+                    todayScroll.scrollTo(o.removePrefix("scroll:").toIntOrNull() ?: 0)
+                }
                 o.startsWith("tab:") ->
                     Tab.entries.firstOrNull { it.name.equals(o.removePrefix("tab:"), ignoreCase = true) }?.let { nav.goTab(it) }
             }
@@ -88,6 +97,7 @@ private fun AppContent(state: AppState, openRequest: MutableState<String?>) {
                     is Overlay.Reader -> ReaderScreen(state, o.items, o.start, o.keyPrefix) { overlay = null }
                     Overlay.Intimacy -> IntimacyScreen(state) { overlay = null }
                     Overlay.Settings -> SettingsScreen(state) { overlay = null }
+                    Overlay.Readings -> ReadingsScreen(state) { overlay = null }
                     null -> when (tab) {
                         Tab.TODAY -> TodayScreen(state, nav, todayScroll)
                         Tab.HOURS -> OfficeScreen(state, nav, officeScroll)

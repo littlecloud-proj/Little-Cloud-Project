@@ -86,6 +86,9 @@ fun TodayScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.S
                 LText("Tomorrow · ${tomorrow.title}", 14, Lc.muted)
             }
 
+            // Epistle and Gospel
+            ReadingsCard(state) { nav.openReadings() }
+
             // Fasting
             FastRow(state, nav)
 
@@ -241,5 +244,6 @@ interface Nav {
     fun openRule(evening: Boolean, index: Int)
     fun openIntimacy()
     fun openSettings()
+    fun openReadings()
     fun arrange(evening: Boolean)
 }

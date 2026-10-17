@@ -3,19 +3,24 @@
 *Ecce nubecula parva quasi vestigium hominis.* (3 Kings 18:44)
 
 A quiet prayer companion for traditional Catholics and Carmelite tertiaries.
-It has the Little Office of the Blessed Virgin Mary, the day's collect, a prayer book in Latin, English and Spanish, bells, and a traditional calendar.
+It has the Little Office of the Blessed Virgin Mary, the day's collect, Epistle and Gospel, a prayer book in Latin, English and Spanish, bells, and a traditional calendar.
 The default calendar follows the pre-1955 (Divino Afflatu) rubrics, and the 1962 rubrics are available as an option.
 The app works fully offline and has no internet permission.
 
 ## Status
 - **Android:** 0.7, built from the shared Kotlin Multiplatform code.
-- **iPhone:** the same screens run on iOS. Bells are not on iPhone yet.
+- **iPhone:** the same screens run on iOS. On iPhone the bells come as notifications, so they cannot ring through silent mode.
+
+## Sources
+- **Calendar, collects, Little Office, Mass readings (Latin):** the Divinum Officium Project.
+- **Readings (English):** the Douay-Rheims Bible (Challoner), Project Gutenberg #8300, taken by each citation.
+- **Prayers:** public-domain manuals, listed in `tools/`.
 
 ## Layout
 - `app/src/commonMain`: the calendar, the prayers, the Little Office and every screen, shared by both phones.
 - `app/src/androidMain`: Android only. This has MainActivity, the bells (alarms, notifications, the ring screen) and printing.
-- `app/src/iosMain`: iPhone only. This has the entry point, AirPrint, the prayer-timer notification and settings storage.
-- `app/src/commonMain/composeResources`: the bundled data (calendars, Office, collects), the icons and the Forum font.
+- `app/src/iosMain`: iPhone only. This has the entry point, the bells as notifications, AirPrint and settings storage.
+- `app/src/commonMain/composeResources`: the bundled data (calendars, Office, collects, readings), the icons and the Forum font.
 - `iosApp/`: the Xcode project for the iPhone app.
 - `tools/`: scripts and public-domain sources that generated the bundled data.
 

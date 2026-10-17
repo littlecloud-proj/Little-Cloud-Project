@@ -136,7 +136,7 @@ private fun Part(title: String, paragraphs: List<String>, size: Int) {
 }
 
 @Composable
-private fun LetterBtn(label: String, size: Int, onClick: () -> Unit) {
+internal fun LetterBtn(label: String, size: Int, onClick: () -> Unit) {
     Box(
         Modifier.size(44.dp).clip(CircleShape)
             .clickable(role = Role.Button, onClick = onClick)

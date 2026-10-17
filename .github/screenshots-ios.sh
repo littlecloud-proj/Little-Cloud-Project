@@ -22,6 +22,8 @@ for mode in light dark; do
   shoot "bells$suffix" "tab:bells"
   shoot "settings$suffix" "settings"
   shoot "angelus$suffix" "prayer:angelus"
+  shoot "readings$suffix" "readings" 15
+  shoot "today-lower$suffix" "scroll:1500" 15
 done
 xcrun simctl spawn "$DEV" log show --last 3m --predicate 'process == "LittleCloud"' --style compact 2>/dev/null | grep -iE 'fault|crash|exception|error' | tail -50 > shots/ios-errors.txt
 ls -la shots

@@ -20,6 +20,8 @@ for mode in no yes; do
   shoot "bells$suffix" "tab:bells"
   shoot "settings$suffix" "settings"
   shoot "angelus$suffix" "prayer:angelus"
+  shoot "readings$suffix" "readings" 15
+  shoot "today-lower$suffix" "scroll:1500" 15
 done
 adb logcat -d -s AndroidRuntime:E > shots/android-crashes.txt
 ls -la shots

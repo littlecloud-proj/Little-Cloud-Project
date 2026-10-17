@@ -7,14 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05BA315DF19D5CF373B70C36 /* bell_tower.caf in Resources */ = {isa = PBXBuildFile; fileRef = ACD762343DE7B62B4B5DB11B /* bell_tower.caf */; };
+		122F89E9E160BDF09D5D6A53 /* bell_peal.caf in Resources */ = {isa = PBXBuildFile; fileRef = 44D530A8FCAA998207C73FB1 /* bell_peal.caf */; };
 		22EA1CB33A17DCC6FC82406D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F543015C899423D4B01CEB2E /* Assets.xcassets */; };
 		307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CECA83ACC03A83C85A623 /* iOSApp.swift */; };
+		425839EFF535BAC1B40B8160 /* bell_clapper.caf in Resources */ = {isa = PBXBuildFile; fileRef = 4DA3A696A5A87C6BDA2F319E /* bell_clapper.caf */; };
+		CD21FF09DAD8B896C5DA19B0 /* bell_angelus.caf in Resources */ = {isa = PBXBuildFile; fileRef = DCA9EBBDED78B23C5F35369E /* bell_angelus.caf */; };
+		D213F9A2EC31E8E70D972105 /* bell_hand.caf in Resources */ = {isa = PBXBuildFile; fileRef = A1CA20C0F4E8C911F1CD09F8 /* bell_hand.caf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		44D530A8FCAA998207C73FB1 /* bell_peal.caf */ = {isa = PBXFileReference; path = bell_peal.caf; sourceTree = "<group>"; };
+		4DA3A696A5A87C6BDA2F319E /* bell_clapper.caf */ = {isa = PBXFileReference; path = bell_clapper.caf; sourceTree = "<group>"; };
 		668CECA83ACC03A83C85A623 /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		86038AE1032E284E79B32AD6 /* iosApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1CA20C0F4E8C911F1CD09F8 /* bell_hand.caf */ = {isa = PBXFileReference; path = bell_hand.caf; sourceTree = "<group>"; };
+		ACD762343DE7B62B4B5DB11B /* bell_tower.caf */ = {isa = PBXFileReference; path = bell_tower.caf; sourceTree = "<group>"; };
 		C117AD187833E2513BD2F553 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		DCA9EBBDED78B23C5F35369E /* bell_angelus.caf */ = {isa = PBXFileReference; path = bell_angelus.caf; sourceTree = "<group>"; };
 		F543015C899423D4B01CEB2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -25,6 +35,7 @@
 				F543015C899423D4B01CEB2E /* Assets.xcassets */,
 				C117AD187833E2513BD2F553 /* Info.plist */,
 				668CECA83ACC03A83C85A623 /* iOSApp.swift */,
+				8AC3FADF480787D36FB0A878 /* Sounds */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -35,6 +46,18 @@
 				1DB4B685CAEE8BEFEBBAEF94 /* iosApp */,
 				94C98B8B3A2BFC1966447269 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		8AC3FADF480787D36FB0A878 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				DCA9EBBDED78B23C5F35369E /* bell_angelus.caf */,
+				4DA3A696A5A87C6BDA2F319E /* bell_clapper.caf */,
+				A1CA20C0F4E8C911F1CD09F8 /* bell_hand.caf */,
+				44D530A8FCAA998207C73FB1 /* bell_peal.caf */,
+				ACD762343DE7B62B4B5DB11B /* bell_tower.caf */,
+			);
+			path = Sounds;
 			sourceTree = "<group>";
 		};
 		94C98B8B3A2BFC1966447269 /* Products */ = {
@@ -106,6 +129,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				22EA1CB33A17DCC6FC82406D /* Assets.xcassets in Resources */,
+				CD21FF09DAD8B896C5DA19B0 /* bell_angelus.caf in Resources */,
+				425839EFF535BAC1B40B8160 /* bell_clapper.caf in Resources */,
+				D213F9A2EC31E8E70D972105 /* bell_hand.caf in Resources */,
+				122F89E9E160BDF09D5D6A53 /* bell_peal.caf in Resources */,
+				05BA315DF19D5CF373B70C36 /* bell_tower.caf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
