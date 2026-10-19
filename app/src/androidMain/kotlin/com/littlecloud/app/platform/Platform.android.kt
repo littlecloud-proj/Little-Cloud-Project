@@ -96,7 +96,13 @@ class AndroidPlatform(private val activity: Activity) : PlatformActions {
     override val canPrint = true
     override val appVersion: String =
         runCatching { activity.packageManager.getPackageInfo(activity.packageName, 0).versionName }.getOrNull() ?: ""
-    override val deviceInfo: String = "${Build.MANUFACTURER} ${Build.MODEL} · Android ${Build.VERSION.RELEASE}"
+    override val deviceInfo: String
+        get() {
+            val ctx = activity.applicationContext
+            val exact = if (com.littlecloud.app.bells.BellScheduler.canRingExactly(ctx)) "on" else "off"
+            val battery = if (com.littlecloud.app.bells.BellScheduler.batteryOptimized(ctx)) "optimized" else "unrestricted"
+            return "${Build.MANUFACTURER} ${Build.MODEL} · Android ${Build.VERSION.RELEASE} · exact alarms $exact · battery $battery"
+        }
     override fun print(state: AppState, evening: Boolean) = PrayerPrinter.print(activity, state, evening)
     override fun startPrayerTimer(minutes: Int): Long = BellScheduler.startPrayerTimer(activity.applicationContext, minutes)
     override fun cancelPrayerTimer() = BellScheduler.cancelPrayerTimer(activity.applicationContext)

@@ -67,6 +67,7 @@ object Sounds {
 object BellScheduler {
     private const val KEY_CODES = "scheduledCodes"
     const val TIMER_CODE = 99_001
+    private const val SHOW_CODE = 99_002
 
     fun rescheduleAll(ctx: Context) {
         val am = ctx.getSystemService(AlarmManager::class.java)
@@ -97,7 +98,7 @@ object BellScheduler {
         val intent = Intent(ctx, BellReceiver::class.java)
             .putExtra("bell", bell.id)
             .putExtra("idx", idx)
-        setAlarm(ctx, at.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), pending(ctx, code(bell, idx), intent))
+        setAlarm(ctx, at.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), pending(ctx, code(bell, idx), intent), clock = true)
     }
 
     fun startPrayerTimer(ctx: Context, minutes: Int): Long {
@@ -117,15 +118,35 @@ object BellScheduler {
         return ctx.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()
     }
 
+    /**
+     * Bells are set as alarm clocks: Android never defers them in Doze or battery saving, and
+     * phone makers' power managers leave them alone. (Exact alarms "allowed while idle" may be held
+     * up to about nine minutes when two fall close together on an idle phone, such as the Angelus
+     * and Sext at noon.) The cost is the alarm icon in the status bar and the next bell shown as the
+     * next alarm.
+     */
     @SuppressLint("ScheduleExactAlarm")
-    private fun setAlarm(ctx: Context, atMillis: Long, pi: PendingIntent) {
+    private fun setAlarm(ctx: Context, atMillis: Long, pi: PendingIntent, clock: Boolean = false) {
         val am = ctx.getSystemService(AlarmManager::class.java)
         if (canRingExactly(ctx)) {
-            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atMillis, pi)
+            if (clock) {
+                val show = PendingIntent.getActivity(
+                    ctx, SHOW_CODE,
+                    Intent(ctx, MainActivity::class.java).putExtra(MainActivity.EXTRA_OPEN, "tab:bells"),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                )
+                am.setAlarmClock(AlarmManager.AlarmClockInfo(atMillis, show), pi)
+            } else {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atMillis, pi)
+            }
         } else {
             am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atMillis, pi)
         }
     }
+
+    /** Whether Android may hold the app back to save battery ("Optimized" rather than "Unrestricted"). */
+    fun batteryOptimized(ctx: Context): Boolean =
+        !ctx.getSystemService(android.os.PowerManager::class.java).isIgnoringBatteryOptimizations(ctx.packageName)
 }
 
 class BellReceiver : BroadcastReceiver() {

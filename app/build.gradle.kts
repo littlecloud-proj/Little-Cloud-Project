@@ -57,8 +57,8 @@ android {
         applicationId = "org.littlecloudproject.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 16
-        versionName = "0.9"
+        versionCode = 17
+        versionName = "0.9.1"
     }
 
     // One shared debug key in the repository, so test builds from any machine (Android Studio
