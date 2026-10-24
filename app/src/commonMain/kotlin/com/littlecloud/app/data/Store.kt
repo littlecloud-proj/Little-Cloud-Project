@@ -347,19 +347,22 @@ class AppState {
         hours = Store.loadHours()
     }
 
-    fun dayInfo(d: LocalDate): LiturgicalDay =
-        olderCalendar?.day(d, discipline, carmelite)
-            ?: Calendar1962.day(d, discipline, carmelite)
+    fun dayInfo(d: LocalDate): LiturgicalDay = Americas.apply(
+        olderCalendar?.day(d, discipline, carmelite) ?: Calendar1962.day(d, discipline, carmelite),
+        rubrics,
+    )
 
     /** The Epistle and Gospel of the day's Mass, by the rubrics chosen. */
-    fun readings(d: LocalDate): List<Readings.Reading> = Readings.forDate(d, rubrics)
+    fun readings(d: LocalDate): List<Readings.Reading> =
+        if (Americas.kept(d)) Americas.readings().ifEmpty { Readings.forDate(d, rubrics) } else Readings.forDate(d, rubrics)
 
     /** Text size for the readings, shared with mental prayer. */
     var readingSize by mutableStateOf(prefs.getInt("readSize", 18)); private set
     fun updateReadingSize(v: Int) { readingSize = v; prefs.edit().putInt("readSize", v).apply() }
 
     fun collect(d: LocalDate): Collects.Collect? =
-        olderCalendar.let { if (it != null) it.collect(d) else Collects.forDate(d) }
+        if (Americas.kept(d)) Americas.collect
+        else olderCalendar.let { if (it != null) it.collect(d) else Collects.forDate(d) }
 
     // ---- The user's edits to prayer-book texts --------------------------------------------
 

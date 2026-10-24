@@ -25,6 +25,17 @@ object Readings {
     @Volatile private var data: JsonObject? = null
     private fun load(): JsonObject = data ?: parse("readings.json").also { data = it }
 
+    /** A reading on file with this citation, for feasts kept outside the bundled calendar. */
+    fun byCitation(citation: String, gospel: Boolean): Reading? {
+        val texts = load().getValue("texts").jsonArray
+        for (e in texts) {
+            val t = e.jsonArray
+            fun s(i: Int) = t[i].jsonPrimitive.content
+            if (s(2) == citation && (s(0) == "E") == gospel) return Reading(gospel, s(1), s(2), s(3), s(4), s(5).ifEmpty { null })
+        }
+        return null
+    }
+
     /** The day's Epistle and Gospel, in that order. Empty outside 2026–2050. */
     /** [rubrics] is "1954", "1955" or "1962". */
     fun forDate(d: LocalDate, rubrics: String): List<Reading> {

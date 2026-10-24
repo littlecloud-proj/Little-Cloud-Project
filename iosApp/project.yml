@@ -9,8 +9,8 @@ options:
   createIntermediateGroups: true
 settings:
   base:
-    MARKETING_VERSION: "0.9.2"
-    CURRENT_PROJECT_VERSION: "18"
+    MARKETING_VERSION: "0.9.3"
+    CURRENT_PROJECT_VERSION: "19"
 targets:
   iosApp:
     type: application
