@@ -178,6 +178,9 @@ object Store {
  */
 const val SPANISH_ENABLED = false
 
+/** The note shown under prayers the user wrote. */
+const val OWN_NOTE = "Written by you"
+
 /** The rubrics the app can follow: Pius XII (1955, the default), before 1955, and 1962. */
 val RUBRICS = listOf("1955", "1954", "1962")
 
@@ -383,8 +386,67 @@ class AppState {
         prefs.edit().putString("prayerEdits", o.toString()).apply()
     }
 
-    /** A prayer-book prayer with the user's edits applied. */
+    // ---- Prayers the user writes: kept in the prayer book under "Your prayers" -------------
+
+    /** The user's own prayers, ids "own:1", "own:2" …; the words are kept in [Prayer.english]. */
+    var ownPrayers by mutableStateOf(loadOwn()); private set
+
+    private fun loadOwn(): List<Prayer> = runCatching {
+        Json.parseToJsonElement(prefs.getString("ownPrayers", null) ?: "[]").jsonArray.map {
+            val o = it.jsonObject
+            Prayer(o.str("id")!!, o.str("title")!!, OWN_NOTE, null, o.str("text") ?: "")
+        }
+    }.getOrDefault(emptyList())
+
+    private fun saveOwn(list: List<Prayer>) {
+        ownPrayers = list
+        val arr = buildJsonArray {
+            list.forEach { p -> addJsonObject { put("id", p.id); put("title", p.title); put("text", p.english) } }
+        }
+        prefs.edit().putString("ownPrayers", arr.toString()).apply()
+    }
+
+    /** Adds a prayer the user wrote to the prayer book and returns it. */
+    fun addOwnPrayer(title: String, text: String): Prayer {
+        val n = (ownPrayers.mapNotNull { it.id.removePrefix("own:").toIntOrNull() }.maxOrNull() ?: 0) + 1
+        val p = Prayer("own:$n", title.trim(), OWN_NOTE, null, text.trim())
+        saveOwn(ownPrayers + p)
+        return p
+    }
+
+    /** Changes one of the user's prayers, and its title wherever it stands in the morning or evening rule. */
+    fun updateOwnPrayer(id: String, title: String, text: String) {
+        if (title.isBlank()) return
+        saveOwn(ownPrayers.map { if (it.id == id) it.copy(title = title.trim(), english = text.trim()) else it })
+        fun fix(l: List<PrayerItem>) = l.map { if (it.prayerId == id) it.copy(title = title.trim()) else it }
+        setList(false, fix(morning)); setList(true, fix(evening))
+    }
+
+    /** Removes one of the user's prayers from the book and from the morning and evening rule. */
+    fun removeOwnPrayer(id: String) {
+        saveOwn(ownPrayers.filter { it.id != id })
+        setList(false, morning.filter { it.prayerId != id }); setList(true, evening.filter { it.prayerId != id })
+    }
+
+    init {
+        // Prayers written before 0.9.2 lived only in the rule; move each into the prayer book.
+        if (!prefs.contains("ownPrayers")) {
+            val seen = mutableMapOf<Pair<String, String?>, String>()
+            fun move(l: List<PrayerItem>) = l.map { item ->
+                if (item.prayerId != null || item.note != OWN_NOTE) item
+                else {
+                    val id = seen.getOrPut(item.title to item.text) { addOwnPrayer(item.title, item.text ?: "").id }
+                    item.copy(prayerId = id, text = null)
+                }
+            }
+            val m = move(morning); val e = move(evening)
+            if (seen.isNotEmpty()) { setList(false, m); setList(true, e) } else saveOwn(emptyList())
+        }
+    }
+
+    /** A prayer-book prayer with the user's edits applied, or one of the user's own prayers. */
     fun prayer(id: String?): Prayer? {
+        if (id != null && id.startsWith("own:")) return ownPrayers.firstOrNull { it.id == id }
         val base = PrayerBook.get(id) ?: return null
         val e = prayerEdits[base.id] ?: return base
         return base.copy(

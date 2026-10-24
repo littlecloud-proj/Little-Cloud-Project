@@ -21,6 +21,8 @@ data class LcColors(
     val muted: Color,
     val accent: Color,
     val soft: Color,
+    /** Rubrics (directions not said aloud), red as in the old books. */
+    val rubric: Color,
     val on: Color,
     val dark: Boolean,
 )
@@ -29,12 +31,12 @@ data class LcColors(
 val LightLc = LcColors(
     bg = Color(0xFFF2F0EB), surface = Color(0xFFFBFAF7), line = Color(0xFFDDD6CB),
     ink = Color(0xFF2A2420), muted = Color(0xFF665C53), accent = Color(0xFF6A4632),
-    soft = Color(0xFFE8E0D4), on = Color(0xFFFBFAF7), dark = false,
+    soft = Color(0xFFE8E0D4), rubric = Color(0xFF9B2D20), on = Color(0xFFFBFAF7), dark = false,
 )
 val DarkLc = LcColors(
     bg = Color(0xFF151311), surface = Color(0xFF201C19), line = Color(0xFF38322C),
     ink = Color(0xFFEDE6DD), muted = Color(0xFFA79C90), accent = Color(0xFFD2B28F),
-    soft = Color(0xFF2E2721), on = Color(0xFF151311), dark = true,
+    soft = Color(0xFF2E2721), rubric = Color(0xFFE0907E), on = Color(0xFF151311), dark = true,
 )
 
 val LocalLc = staticCompositionLocalOf { LightLc }

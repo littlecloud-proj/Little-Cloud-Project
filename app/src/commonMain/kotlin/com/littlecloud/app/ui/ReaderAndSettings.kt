@@ -140,7 +140,7 @@ private fun PrayerPage(state: AppState, item: PrayerItem) {
         if (p != null) {
             // The vernacular text: Spanish only where an approved text is on file.
             val spanish = if (es) state.spanish(p.id) else null
-            val vern = if (es) spanish else p.english
+            val vern = if (es) spanish else p.english.ifBlank { null }
             if (p.latin != null) {
                 Segmented(langOptions(state), lang) { state.updateOfficeLang(it) }
             }
@@ -148,6 +148,9 @@ private fun PrayerPage(state: AppState, item: PrayerItem) {
             val showVern = vern != null && (lang != "latin" || p.latin == null)
             if (showLatin) PrayerText(p.latin!!, 19, Lc.ink)
             if (showVern) PrayerText(vern!!, 18, if (showLatin) Lc.muted else Lc.ink)
+            if (p.latin == null && vern == null && !es) {
+                LText("No words are written for this prayer. Say it from memory or your own book, then mark it as said.", 17, Lc.muted, lineHeight = 1.5f)
+            }
             if (es && spanish == null) {
                 if (p.latin == null) PrayerText(p.english, 18, Lc.ink)
                 LText(
@@ -220,6 +223,7 @@ private fun PrayerEditor(state: AppState, item: PrayerItem, evening: Boolean, on
             LText("Edit prayer", 20, modifier = Modifier.weight(1f))
             TextLink("Save") {
                 if (id != null && base != null) state.editPrayer(id, title, latin, english, spanish)
+                else if (id != null && id.startsWith("own:")) state.updateOwnPrayer(id, title, english)
                 else state.editOwnPrayer(evening, item, title, english)
                 onDone()
             }

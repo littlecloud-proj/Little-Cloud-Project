@@ -29,6 +29,23 @@ fun PrayersScreen(state: AppState, nav: Nav, evening: Boolean, onTab: (Boolean) 
     fun set(l: List<PrayerItem>) = state.setList(evening, l)
     var title by remember { mutableStateOf("") }
     var text by remember { mutableStateOf("") }
+    var deleting by remember { mutableStateOf<com.littlecloud.app.data.Prayer?>(null) }
+    deleting?.let { p ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { deleting = null },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = { state.removeOwnPrayer(p.id); deleting = null }) {
+                    LText("Delete", 16, Lc.accent)
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { deleting = null }) { LText("Keep it", 16, Lc.muted) }
+            },
+            title = { LText("Delete “${p.title}”?", 22) },
+            text = { LText("It will be removed from your prayer book and from your morning and evening prayer.", 16, Lc.muted) },
+            containerColor = Lc.surface,
+        )
+    }
 
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 18.dp, bottom = 8.dp)) {
@@ -102,16 +119,39 @@ fun PrayersScreen(state: AppState, nav: Nav, evening: Boolean, onTab: (Boolean) 
                 Spacer(Modifier.height(10.dp))
                 PrimaryButton("Add to ${if (evening) "evening" else "morning"} prayer", icon = Res.drawable.ic_plus) {
                     if (title.isNotBlank()) {
-                        set(list + PrayerItem(title.trim(), "Written by you", text = text.trim().ifEmpty { null }))
+                        val p = state.addOwnPrayer(title, text)
+                        set(list + PrayerItem(p.title, p.subtitle, p.id))
                         title = ""; text = ""
                     }
                 }
+                Spacer(Modifier.height(6.dp))
+                LText("It is also kept in your prayer book below.", 14, Lc.muted)
             }
 
             Column {
                 SectionLabel("Prayer book")
                 LText("Tap a prayer to read or edit it; tap + to add it to your ${if (evening) "evening" else "morning"} prayer.", 14, Lc.muted)
                 Spacer(Modifier.height(10.dp))
+                if (state.ownPrayers.isNotEmpty()) {
+                    LCard {
+                        state.ownPrayers.forEachIndexed { i, p ->
+                            if (i > 0) HLine()
+                            RowItem(Modifier.padding(start = 16.dp, end = 4.dp), onClick = {
+                                nav.openPrayer(PrayerItem(p.title, p.subtitle, p.id))
+                            }) {
+                                Column(Modifier.weight(1f).padding(vertical = 8.dp)) {
+                                    LText(p.title, 17)
+                                    LText(p.subtitle, 14, Lc.muted, maxLines = 1)
+                                }
+                                IconBtn(Res.drawable.ic_plus, "Add ${p.title} to ${if (evening) "evening" else "morning"} prayer", Lc.accent, size = 18.dp) {
+                                    set(list + PrayerItem(p.title, p.subtitle, p.id))
+                                }
+                                IconBtn(Res.drawable.ic_close, "Delete ${p.title}", size = 18.dp) { deleting = p }
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(12.dp))
+                }
                 LCard {
                     PrayerBook.every.forEachIndexed { i, base ->
                         val p = state.prayer(base.id) ?: base

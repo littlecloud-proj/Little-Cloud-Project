@@ -18,6 +18,7 @@ object PrayerBooklet {
 
     private fun body(state: AppState, item: PrayerItem): String {
         val p = state.prayer(item.prayerId) ?: return item.text?.let { para(it, "v") } ?: "<p class=\"note\">Said from memory.</p>"
+        if (p.latin == null && p.english.isBlank()) return "<p class=\"note\">Said from memory.</p>"
         val es = state.vernacular == "es"
         val vern = if (es) state.spanish(p.id) ?: (if (p.latin == null) p.english else null) else p.english
         val lang = state.officeLang

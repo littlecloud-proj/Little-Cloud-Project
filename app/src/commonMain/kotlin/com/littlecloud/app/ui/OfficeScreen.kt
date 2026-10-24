@@ -20,11 +20,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.littlecloud.app.data.AppState
 import com.littlecloud.app.data.Calendar1962
 import com.littlecloud.app.data.HourSlot
 import com.littlecloud.app.data.LittleOffice
 import com.littlecloud.app.time.*
+import kotlinx.coroutines.launch
 
 private data class Verse(val latin: String, val english: String)
 
@@ -71,6 +73,7 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
     var selectedId by rememberSaveable { mutableStateOf<String?>(null) }
     val selected = slots.firstOrNull { it.slotId == selectedId } ?: next ?: slots.last()
     var editing by remember { mutableStateOf<HourSlot?>(null) }
+    val scope = rememberCoroutineScope()
     val platform = com.littlecloud.app.platform.LocalPlatform.current
     val tomorrowTitle = remember(today, state.rubrics) { state.dayInfo(today.plusDays(1)).title }
     val (antiphon, antiphonId) = Calendar1962.finalMarianAntiphon(today)
@@ -127,7 +130,16 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
                 }
                 Spacer(Modifier.height(14.dp))
                 Segmented(langOptions(state), state.officeLang) { state.updateOfficeLang(it) }
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(10.dp))
+                androidx.compose.material3.Text(
+                    "Directions in red italics, such as a bow or a genuflection, are done, not said aloud.",
+                    color = Lc.rubric,
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontFamily = LcFont, fontSize = 14.sp, lineHeight = 19.sp,
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                    ),
+                )
+                Spacer(Modifier.height(12.dp))
                 val rubrics = state.rubrics
                 val officeDate = selected.date
                 val blocks by produceState(initialValue = emptyList<LittleOffice.Block>(), officeDate, selected.id, rubrics) {
@@ -167,6 +179,11 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
                 val d = state.isSaid(selected)
                 PrimaryButton(if (d) "${selected.hour.latin} said · Deo gratias" else "Mark ${selected.hour.latin} as said") {
                     state.toggleSaid(selected)
+                    if (!d) {
+                        // Back to the top, with the next hour to be said chosen.
+                        selectedId = null
+                        scope.launch { scroll.animateScrollTo(0) }
+                    }
                 }
             }
 
@@ -226,34 +243,84 @@ private fun AnticipationCard(state: AppState, onBellsChanged: (Boolean) -> Unit)
     }
 }
 
-/** Rubrical directions ("is said silently", "Commemoratio de Sanctis" …), shown small and muted. */
+/** Whole lines that are rubrical directions ("is said silently", "Commemoratio de Sanctis" …). */
 private val rubricLine = Regex("^(secreto|silently|Antiphona finalis.*|Final Antiphon.*|Commemoratio de Sanctis|Commemoration of the Saints|" +
     ".*(dicitur|dicuntur|incipiuntur|separatur|is said|are said|Otherwise, the hour|Our Father is said).*)$")
+private const val RUBRIC_WORDS = "Sequens versus dicitur flexis genibus|[Ff]it reverentia[^)]*|genuflectitur|genuflect|[Bb]ow head"
+/** A direction at the start of a line: "(Fit reverentia)", "bow head", "Kneel for the following verse" … */
+private val leadingRubric = Regex(
+    "^(\\((?:$RUBRIC_WORDS)\\)|bow head|Kneel for the following verse|During the following verse(?:, by local custom,)? all make a profound bow[.:]?)\\s*",
+)
+/** A direction inside a line, such as "(genuflectitur)" in the Venite. */
+private val inlineRubric = Regex("\\((?:$RUBRIC_WORDS)\\)")
 private val verseNum = Regex("^(\\d+:\\d+[a-z]?)\\s+(.*)$")
 private val titleLine = Regex("^(Psalmus|Psalm|Canticum|Canticle|Hymnus|Hymn|Lectio|Lesson|Capitulum|Chapter|Absolutio|Absolution|Benedictio|Blessing|Responsorium|Responsory|Invitatorium|Invitatory)\\b.*|^[1-4]?\\s?[A-Z][a-z]{1,4} \\d+:\\d+.*")
 
-/** One line of the Office: verse numbers small, ℣ ℟ and Ant. in the accent colour, titles muted. */
+/** A rubric on its own line: small red italics, as the old books print what is done and not said. */
 @Composable
-private fun OfficeLine(line: String, latin: Boolean, dim: Boolean) {
+private fun RubricNote(text: String) {
+    val t = text.trim().trim('(', ')').trimEnd(':', '.').replaceFirstChar { it.uppercase() } + "."
+    androidx.compose.material3.Text(
+        t, Modifier.padding(top = 4.dp, bottom = 1.dp), color = Lc.rubric,
+        style = androidx.compose.ui.text.TextStyle(
+            fontFamily = LcFont, fontSize = 14.sp, lineHeight = 19.sp,
+            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+        ),
+    )
+}
+
+/** Office text with any direction inside it set in small red italics. */
+@Composable
+private fun RubricText(text: String, size: Int, color: Color, modifier: Modifier = Modifier) {
+    val rubric = Lc.rubric
+    val styled = androidx.compose.ui.text.buildAnnotatedString {
+        var last = 0
+        for (m in inlineRubric.findAll(text)) {
+            append(text.substring(last, m.range.first))
+            pushStyle(androidx.compose.ui.text.SpanStyle(
+                color = rubric, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic, fontSize = (size * 0.8f).sp,
+            ))
+            append(m.value); pop()
+            last = m.range.last + 1
+        }
+        append(text.substring(last))
+    }
+    androidx.compose.material3.Text(
+        styled, modifier, color = color,
+        style = androidx.compose.ui.text.TextStyle(fontFamily = LcFont, fontSize = size.sp, lineHeight = (size * 1.45f).sp),
+    )
+}
+
+/**
+ * One line of the Office: verse numbers small, ℣ ℟ and Ant. in the accent colour, titles muted, and
+ * rubrics (bows, genuflections, what is said silently) in small red italics so they are not read aloud.
+ */
+@Composable
+private fun OfficeLine(raw: String, latin: Boolean, dim: Boolean) {
     val size = if (latin) 18 else 17
     val ink = if (dim) Lc.muted else Lc.ink
-    val m = verseNum.find(line)
+    val vm = verseNum.find(raw)
+    val num = vm?.groupValues?.get(1)
+    var line = vm?.groupValues?.get(2) ?: raw
+    leadingRubric.find(line)?.let { r ->
+        RubricNote(r.groupValues[1])
+        line = line.substring(r.range.last + 1)
+    }
     when {
         line == "_" -> Spacer(Modifier.height(6.dp))
-        line.length < 110 && rubricLine.matches(line) && !line.startsWith("℣") && !line.startsWith("(") && !Regex("^\\d+:\\d+").containsMatchIn(line) ->
-            LText(line, 14, Lc.accent, Modifier.padding(top = 4.dp, bottom = 2.dp), lineHeight = 1.35f)
-        m != null -> Row(Modifier.padding(vertical = 2.dp)) {
-            LText(m.groupValues[1], 11, Lc.muted, Modifier.width(44.dp).padding(top = 4.dp))
-            LText(m.groupValues[2], size, ink, Modifier.weight(1f), lineHeight = 1.45f)
+        num != null -> Row(Modifier.padding(vertical = 2.dp)) {
+            LText(num, 11, Lc.muted, Modifier.width(44.dp).padding(top = 4.dp))
+            RubricText(line, size, ink, Modifier.weight(1f))
         }
+        line.length < 110 && rubricLine.matches(line) && !line.startsWith("℣") && !line.startsWith("(") -> RubricNote(line)
         titleLine.matches(line) -> LText(line, 14, Lc.muted, Modifier.padding(top = 6.dp, bottom = 2.dp), spacing = 0.04f)
         line.startsWith("℣.") || line.startsWith("℟.") || line.startsWith("Ant.") || line.startsWith("V.") || line.startsWith("R.") -> {
             val cut = line.indexOf(' ').let { if (it < 0) line.length else it }
             Row(Modifier.padding(vertical = 2.dp)) {
                 LText(line.substring(0, cut), size, Lc.accent)
-                LText(line.substring(cut), size, ink, Modifier.weight(1f), lineHeight = 1.45f)
+                RubricText(line.substring(cut), size, ink, Modifier.weight(1f))
             }
         }
-        else -> LText(line, size, ink, Modifier.padding(vertical = 2.dp), lineHeight = 1.45f)
+        else -> RubricText(line, size, ink, Modifier.padding(vertical = 2.dp))
     }
 }
