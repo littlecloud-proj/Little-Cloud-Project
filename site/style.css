@@ -1,0 +1,17 @@
+@font-face { font-family: Forum; src: url('Forum-Regular.ttf'); }
+:root { --bg:#F2F0EB; --surface:#FBFAF7; --ink:#2A2420; --muted:#665C53; --accent:#6A4632; --line:#DDD6CB; --blue:#3E5573; }
+@media (prefers-color-scheme: dark) { :root { --bg:#151311; --surface:#201C19; --ink:#EDE6DD; --muted:#A79C90; --accent:#D2B28F; --line:#38322C; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font: 18px/1.6 Forum, Georgia, serif; }
+main { max-width: 680px; margin: 0 auto; padding: 32px 16px 64px; }
+header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+header img { width:64px; height:64px; border-radius:16px; }
+header a { color:inherit; text-decoration:none; }
+h1 { font-weight:normal; font-size:36px; margin:0; line-height:1.15; }
+h2 { font-weight:normal; font-size:24px; margin:32px 0 8px; }
+p, li { color:var(--ink); }
+.muted { color:var(--muted); }
+a { color:var(--accent); }
+.card { background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:20px; margin:20px 0; }
+nav { display:flex; gap:20px; margin-top:40px; padding-top:16px; border-top:1px solid var(--line); font-size:16px; }
+em.verse { color:var(--muted); }
