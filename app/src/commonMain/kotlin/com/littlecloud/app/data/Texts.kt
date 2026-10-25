@@ -15,13 +15,13 @@ object LittleOffice {
 
     @Volatile private var office1954: JsonObject? = null
     @Volatile private var office1955: JsonObject? = null
-    @Volatile private var office1960: JsonObject? = null
 
-    /** office.json follows the rubrics of 1960, office1955.json those of 1955, office1954.json those before. */
+    /** office1955.json follows the rubrics of 1955, office1954.json those before. */
     private fun load(rubrics: String): JsonObject = when (rubrics) {
         "1954" -> office1954 ?: parse("office1954.json").also { office1954 = it }
         "1955" -> office1955 ?: parse("office1955.json").also { office1955 = it }
-        else -> office1960 ?: parse("office.json").also { office1960 = it }
+        // The 1962 option is set aside (its office.json is not bundled); anything else reads 1955.
+        else -> office1955 ?: parse("office1955.json").also { office1955 = it }
     }
 
     fun key(d: LocalDate, hour: String): String {
@@ -74,7 +74,8 @@ object Collects {
     private fun load(): JsonObject = data ?: parse("collects.json").also { data = it }
 
     fun forDate(d: LocalDate): Collect? {
-        val root = load()
+        // collects.json (1962) is not bundled while that option is set aside.
+        val root = runCatching { load() }.getOrNull() ?: return null
         val idx = root.getValue("years").jsonObject[d.year.toString()] as? JsonArray ?: return null
         val i = idx.getOrNull(d.dayOfYear - 1)?.jsonPrimitive?.intOrNull ?: -1
         if (i < 0) return null

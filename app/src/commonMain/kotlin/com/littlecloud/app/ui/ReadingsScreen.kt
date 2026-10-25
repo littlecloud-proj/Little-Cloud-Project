@@ -108,6 +108,12 @@ fun ReadingsScreen(state: AppState, onBack: () -> Unit) {
                     }
                 }
             }
+            val platform = com.littlecloud.app.platform.LocalPlatform.current
+            if (platform.canPrint && !list.isNullOrEmpty()) {
+                OutlineButton("Print or save as PDF", Modifier.fillMaxWidth()) {
+                    platform.printPage(state.dayInfo(state.today).title, PrayerBooklet.readingsHtml(state, state.today))
+                }
+            }
             LText(
                 "Latin: the Roman Missal, from the Divinum Officium Project. English: the Douay-Rheims Bible " +
                     "(Challoner revision), from Project Gutenberg, taken by the citation.",

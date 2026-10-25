@@ -75,9 +75,23 @@ class AndroidBells(private val ctx: Context) : BellSystem {
     override fun Notices(state: AppState) {
         val ctx = LocalContext.current
         var exactOk by remember { mutableStateOf(BellScheduler.canRingExactly(ctx)) }
+        // Check again whenever the app comes back, as after the user allows it in Settings.
+        val owner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+        androidx.compose.runtime.DisposableEffect(owner) {
+            val obs = androidx.lifecycle.LifecycleEventObserver { _, e ->
+                if (e == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                    exactOk = BellScheduler.canRingExactly(ctx)
+                    if (exactOk) BellScheduler.rescheduleAll(ctx)
+                }
+            }
+            owner.lifecycle.addObserver(obs)
+            onDispose { owner.lifecycle.removeObserver(obs) }
+        }
         if (!exactOk && Build.VERSION.SDK_INT >= 31) {
             LCard(padding = 16.dp) {
-                LText("Allow exact alarms so the bells ring on time.", 16)
+                LText("Allow alarms so the bells ring on time.", 17)
+                Spacer(Modifier.height(4.dp))
+                LText("Tap below and turn on \"Allow setting alarms and reminders\" for Little Cloud. Without it, Android may ring the bells several minutes late.", 14, Lc.muted)
                 Spacer(Modifier.height(10.dp))
                 OutlineButton("Open settings") {
                     runCatching {
@@ -88,17 +102,5 @@ class AndroidBells(private val ctx: Context) : BellSystem {
             }
         }
 
-        val nm = remember { ctx.getSystemService(android.app.NotificationManager::class.java) }
-        if (Build.VERSION.SDK_INT >= 34 && state.bells.any { it.loud && it.enabled } && !nm.canUseFullScreenIntent()) {
-            LCard(padding = 16.dp) {
-                LText("Allow Little Cloud to show bells over the lock screen.", 16)
-                Spacer(Modifier.height(10.dp))
-                OutlineButton("Open settings") {
-                    runCatching {
-                        ctx.startActivity(Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT, Uri.parse("package:${ctx.packageName}")))
-                    }
-                }
-            }
-        }
     }
 }

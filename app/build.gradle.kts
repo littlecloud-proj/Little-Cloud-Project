@@ -37,6 +37,7 @@ kotlin {
             implementation("androidx.core:core-ktx:1.15.0")
             implementation("androidx.activity:activity-compose:1.9.3")
             implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+            implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
             implementation(compose.preview)
         }
@@ -51,14 +52,14 @@ compose.resources {
 
 android {
     namespace = "com.littlecloud.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "org.littlecloudproject.app"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 19
-        versionName = "0.9.3"
+        targetSdk = 36
+        versionCode = 20
+        versionName = "1.0-beta"
     }
 
     // One shared debug key in the repository, so test builds from any machine (Android Studio
@@ -70,11 +71,22 @@ android {
             keyAlias = "androiddebugkey"
             keyPassword = "android"
         }
+        // The private upload key for Google Play, given to CI as secrets (never committed).
+        val ks = System.getenv("LC_UPLOAD_KEYSTORE")
+        if (ks != null && file(ks).exists()) {
+            create("upload") {
+                storeFile = file(ks)
+                storePassword = System.getenv("LC_UPLOAD_STORE_PASSWORD")
+                keyAlias = System.getenv("LC_UPLOAD_KEY_ALIAS") ?: "upload"
+                keyPassword = System.getenv("LC_UPLOAD_KEY_PASSWORD") ?: System.getenv("LC_UPLOAD_STORE_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.findByName("upload")
         }
     }
 

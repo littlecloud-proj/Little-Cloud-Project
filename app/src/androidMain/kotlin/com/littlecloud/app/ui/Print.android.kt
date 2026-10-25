@@ -8,15 +8,13 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.littlecloud.app.data.AppState
 
-/** Prints the morning or evening rule of prayer as a small booklet, through Android's print service. */
+/** Prints an HTML page through Android's print service, which also offers "Save as PDF". */
 object PrayerPrinter {
     // Held until printing begins, so the WebView is not collected while it lays out the page.
     @SuppressLint("StaticFieldLeak")
     private var pending: WebView? = null
 
-    fun print(ctx: Context, state: AppState, evening: Boolean) {
-        val title = PrayerBooklet.title(evening)
-        val html = PrayerBooklet.html(state, evening)
+    fun print(ctx: Context, title: String, html: String) {
         val web = WebView(ctx)
         web.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String?) {

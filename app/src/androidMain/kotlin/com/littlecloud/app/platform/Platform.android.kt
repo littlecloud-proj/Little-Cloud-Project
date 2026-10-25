@@ -103,7 +103,7 @@ class AndroidPlatform(private val activity: Activity) : PlatformActions {
             val battery = if (com.littlecloud.app.bells.BellScheduler.batteryOptimized(ctx)) "optimized" else "unrestricted"
             return "${Build.MANUFACTURER} ${Build.MODEL} · Android ${Build.VERSION.RELEASE} · exact alarms $exact · battery $battery"
         }
-    override fun print(state: AppState, evening: Boolean) = PrayerPrinter.print(activity, state, evening)
+    override fun printPage(title: String, html: String) = PrayerPrinter.print(activity, title, html)
     override fun startPrayerTimer(minutes: Int): Long = BellScheduler.startPrayerTimer(activity.applicationContext, minutes)
     override fun cancelPrayerTimer() = BellScheduler.cancelPrayerTimer(activity.applicationContext)
 }

@@ -75,10 +75,10 @@ object IosPlatform : PlatformActions {
 
     override val canPrint: Boolean get() = UIPrintInteractionController.isPrintingAvailable()
 
-    override fun print(state: AppState, evening: Boolean) {
+    override fun printPage(title: String, html: String) {
         val pc = UIPrintInteractionController.sharedPrintController
-        pc.printInfo = UIPrintInfo.printInfo().apply { setJobName("Little Cloud · ${PrayerBooklet.title(evening)}") }
-        pc.printFormatter = UIMarkupTextPrintFormatter(markupText = PrayerBooklet.html(state, evening))
+        pc.printInfo = UIPrintInfo.printInfo().apply { setJobName("Little Cloud · $title") }
+        pc.printFormatter = UIMarkupTextPrintFormatter(markupText = html)
         pc.presentAnimated(true, completionHandler = null)
     }
 

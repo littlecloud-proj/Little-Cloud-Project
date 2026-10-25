@@ -30,6 +30,9 @@ fun PrayersScreen(state: AppState, nav: Nav, evening: Boolean, onTab: (Boolean) 
     var title by remember { mutableStateOf("") }
     var text by remember { mutableStateOf("") }
     var deleting by remember { mutableStateOf<com.littlecloud.app.data.Prayer?>(null) }
+    var query by remember { mutableStateOf("") }
+    fun matches(p: com.littlecloud.app.data.Prayer) =
+        query.isBlank() || fold(p.title + " " + p.subtitle).contains(fold(query.trim()))
     deleting?.let { p ->
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { deleting = null },
@@ -85,12 +88,12 @@ fun PrayersScreen(state: AppState, nav: Nav, evening: Boolean, onTab: (Boolean) 
 
             val platform = com.littlecloud.app.platform.LocalPlatform.current
             if (platform.canPrint) Column {
-                SectionLabel("Print")
-                LText("A clean copy of your rule, in the language chosen in Settings, to keep in your missal.", 14, Lc.muted)
+                SectionLabel("Print or save as PDF")
+                LText("A clean copy of your rule, in the language chosen in Settings, to keep in your missal or save as a PDF.", 14, Lc.muted)
                 Spacer(Modifier.height(10.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OutlineButton("Morning Prayer", Modifier.weight(1f)) { platform.print(state, evening = false) }
-                    OutlineButton("Evening Prayer", Modifier.weight(1f)) { platform.print(state, evening = true) }
+                    OutlineButton("Morning Prayer", Modifier.weight(1f)) { platform.printPage(PrayerBooklet.title(false), PrayerBooklet.html(state, false)) }
+                    OutlineButton("Evening Prayer", Modifier.weight(1f)) { platform.printPage(PrayerBooklet.title(true), PrayerBooklet.html(state, true)) }
                 }
             }
 
@@ -132,9 +135,30 @@ fun PrayersScreen(state: AppState, nav: Nav, evening: Boolean, onTab: (Boolean) 
                 SectionLabel("Prayer book")
                 LText("Tap a prayer to read or edit it; tap + to add it to your ${if (evening) "evening" else "morning"} prayer.", 14, Lc.muted)
                 Spacer(Modifier.height(10.dp))
-                if (state.ownPrayers.isNotEmpty()) {
+                OutlinedTextField(
+                    value = query, onValueChange = { query = it },
+                    placeholder = { LText("Search the prayer book", 16, Lc.muted) },
+                    singleLine = true,
+                    textStyle = TextStyle(fontFamily = LcFont, fontSize = 17.sp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Lc.accent, unfocusedBorderColor = Lc.line,
+                        focusedContainerColor = Lc.surface, unfocusedContainerColor = Lc.surface,
+                        cursorColor = Lc.accent, focusedTextColor = Lc.ink, unfocusedTextColor = Lc.ink,
+                    ),
+                    trailingIcon = if (query.isNotEmpty()) {
+                        { IconBtn(Res.drawable.ic_close, "Clear search", Lc.muted, size = 18.dp) { query = "" } }
+                    } else null,
+                    shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(10.dp))
+                val own = state.ownPrayers.filter { matches(it) }
+                val book = PrayerBook.every.map { state.prayer(it.id) ?: it }.filter { matches(it) }
+                if (own.isEmpty() && book.isEmpty()) {
+                    LText("No prayer in the book matches “${query.trim()}”.", 15, Lc.muted)
+                }
+                if (own.isNotEmpty()) {
                     LCard {
-                        state.ownPrayers.forEachIndexed { i, p ->
+                        own.forEachIndexed { i, p ->
                             if (i > 0) HLine()
                             RowItem(Modifier.padding(start = 16.dp, end = 4.dp), onClick = {
                                 nav.openPrayer(PrayerItem(p.title, p.subtitle, p.id))
@@ -152,9 +176,8 @@ fun PrayersScreen(state: AppState, nav: Nav, evening: Boolean, onTab: (Boolean) 
                     }
                     Spacer(Modifier.height(12.dp))
                 }
-                LCard {
-                    PrayerBook.every.forEachIndexed { i, base ->
-                        val p = state.prayer(base.id) ?: base
+                if (book.isNotEmpty()) LCard {
+                    book.forEachIndexed { i, p ->
                         if (i > 0) HLine()
                         RowItem(Modifier.padding(start = 16.dp, end = 4.dp), onClick = {
                             nav.openPrayer(PrayerItem(p.title, p.subtitle, p.id))
@@ -172,4 +195,12 @@ fun PrayersScreen(state: AppState, nav: Nav, evening: Boolean, onTab: (Boolean) 
             }
         }
     }
+}
+
+/** Lower case, without accents, so "memorare" finds "Memoráre" and "regina caeli" finds "Regína Cæli". */
+private fun fold(s: String): String {
+    val map = mapOf('á' to "a", 'à' to "a", 'â' to "a", 'é' to "e", 'è' to "e", 'ê' to "e", 'ë' to "e", 'í' to "i", 'ì' to "i",
+        'ó' to "o", 'ò' to "o", 'ô' to "o", 'ú' to "u", 'ù' to "u", 'ü' to "u", 'ý' to "y", 'ñ' to "n", 'ç' to "c",
+        'æ' to "ae", 'ǽ' to "ae", 'œ' to "oe", 'j' to "i")
+    return buildString { s.lowercase().forEach { c -> append(map[c] ?: c.toString()) } }
 }

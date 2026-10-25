@@ -173,7 +173,7 @@ private fun BellEditor(
                 if (bells.canRingLoud) Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         LText("Ring like an alarm", 17)
-                        LText("Sounds even when the phone is silenced and shows on the lock screen", 14, Lc.muted)
+                        LText("Sounds even when the phone is silenced, until you stop it", 14, Lc.muted)
                     }
                     LSwitch(loud) { loud = it }
                 }

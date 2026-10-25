@@ -80,7 +80,6 @@ class BellService : Service() {
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setFullScreenIntent(full, true)
             .setContentIntent(full)
             .setOngoing(true)
             .addAction(0, "Stop the bell", stopPi)

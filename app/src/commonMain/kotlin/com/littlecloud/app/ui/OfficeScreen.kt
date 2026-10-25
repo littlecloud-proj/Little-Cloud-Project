@@ -80,9 +80,7 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
 
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 18.dp, bottom = 8.dp)) {
-            Eyebrow("The Little Office")
-            Spacer(Modifier.height(4.dp))
-            Heading("of the Blessed Virgin Mary", 30)
+            Heading("The Little Office of the Blessed Virgin Mary", 28)
             Spacer(Modifier.height(6.dp))
             LText(Calendar1962.littleOfficeSeason(today), 15, Lc.muted)
         }
@@ -176,6 +174,15 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
                     13, Lc.muted,
                 )
                 Spacer(Modifier.height(16.dp))
+                if (platform.canPrint && blocks.isNotEmpty()) {
+                    OutlineButton("Print or save as PDF", Modifier.fillMaxWidth()) {
+                        platform.printPage(
+                            selected.hour.latin,
+                            PrayerBooklet.officeHtml(state, officeDate, selected.id, selected.hour.latin),
+                        )
+                    }
+                    Spacer(Modifier.height(10.dp))
+                }
                 val d = state.isSaid(selected)
                 PrimaryButton(if (d) "${selected.hour.latin} said · Deo gratias" else "Mark ${selected.hour.latin} as said") {
                     state.toggleSaid(selected)
@@ -244,16 +251,16 @@ private fun AnticipationCard(state: AppState, onBellsChanged: (Boolean) -> Unit)
 }
 
 /** Whole lines that are rubrical directions ("is said silently", "Commemoratio de Sanctis" …). */
-private val rubricLine = Regex("^(secreto|silently|Antiphona finalis.*|Final Antiphon.*|Commemoratio de Sanctis|Commemoration of the Saints|" +
+internal val rubricLine = Regex("^(secreto|silently|Antiphona finalis.*|Final Antiphon.*|Commemoratio de Sanctis|Commemoration of the Saints|" +
     ".*(dicitur|dicuntur|incipiuntur|separatur|is said|are said|Otherwise, the hour|Our Father is said).*)$")
 private const val RUBRIC_WORDS = "Sequens versus dicitur flexis genibus|[Ff]it reverentia[^)]*|genuflectitur|genuflect|[Bb]ow head"
 /** A direction at the start of a line: "(Fit reverentia)", "bow head", "Kneel for the following verse" … */
-private val leadingRubric = Regex(
+internal val leadingRubric = Regex(
     "^(\\((?:$RUBRIC_WORDS)\\)|bow head|Kneel for the following verse|During the following verse(?:, by local custom,)? all make a profound bow[.:]?)\\s*",
 )
 /** A direction inside a line, such as "(genuflectitur)" in the Venite. */
-private val inlineRubric = Regex("\\((?:$RUBRIC_WORDS)\\)")
-private val verseNum = Regex("^(\\d+:\\d+[a-z]?)\\s+(.*)$")
+internal val inlineRubric = Regex("\\((?:$RUBRIC_WORDS)\\)")
+internal val verseNum = Regex("^(\\d+:\\d+[a-z]?)\\s+(.*)$")
 private val titleLine = Regex("^(Psalmus|Psalm|Canticum|Canticle|Hymnus|Hymn|Lectio|Lesson|Capitulum|Chapter|Absolutio|Absolution|Benedictio|Blessing|Responsorium|Responsory|Invitatorium|Invitatory)\\b.*|^[1-4]?\\s?[A-Z][a-z]{1,4} \\d+:\\d+.*")
 
 /** A rubric on its own line: small red italics, as the old books print what is done and not said. */

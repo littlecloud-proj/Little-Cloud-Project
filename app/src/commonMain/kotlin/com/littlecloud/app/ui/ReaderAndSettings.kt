@@ -298,13 +298,12 @@ fun SettingsScreen(state: AppState, onBack: () -> Unit) {
             }
             Column {
                 SectionLabel("Rubrics")
-                Segmented(listOf("1955" to "1955", "1954" to "Before 1955", "1962" to "1962"), state.rubrics) { state.updateRubrics(it) }
+                Segmented(listOf("1955" to "1955 (Pius XII)", "1954" to "Before 1955"), state.rubrics) { state.updateRubrics(it) }
                 Spacer(Modifier.height(8.dp))
                 LText(
                     when (state.rubrics) {
                         "1955" -> "The rubrics of Pope Pius XII: the simplification of 1955 and the restored Holy Week of 1956, as kept by the CMRI. The calendar, collects, readings and Little Office follow them."
-                        "1954" -> "The rubrics before the reforms of 1955 (Divino Afflatu). The calendar, collects, readings and Little Office follow them."
-                        else -> "The rubrics of 1960, as in the 1962 books. The calendar, collects, readings and Little Office follow them."
+                        else -> "The rubrics before the reforms of 1955 (Divino Afflatu). The calendar, collects, readings and Little Office follow them."
                     },
                     14, Lc.muted,
                 )

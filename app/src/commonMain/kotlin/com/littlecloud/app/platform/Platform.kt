@@ -43,9 +43,10 @@ interface PlatformActions {
     /** The phone and its system, e.g. "Pixel 8 · Android 15", for feedback emails. */
     val deviceInfo: String
 
-    /** Whether printing is available on this phone. */
+    /** Whether printing (and saving as PDF through the print screen) is available on this phone. */
     val canPrint: Boolean
-    fun print(state: AppState, evening: Boolean)
+    /** Opens the phone's print screen for an HTML page, where it can be printed or saved as a PDF. */
+    fun printPage(title: String, html: String)
 
     /** Sets a bell to ring after [minutes] of silent prayer; returns when it will ring (epoch ms). */
     fun startPrayerTimer(minutes: Int): Long
