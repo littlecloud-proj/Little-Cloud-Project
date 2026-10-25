@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.littlecloud.app.data.AppState
 import com.littlecloud.app.platform.BellSystem
+import com.littlecloud.app.ui.Lc
 import com.littlecloud.app.ui.LCard
 import com.littlecloud.app.ui.LText
 import com.littlecloud.app.ui.OutlineButton
