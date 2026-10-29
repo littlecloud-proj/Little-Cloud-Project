@@ -47,23 +47,54 @@ object LittleOffice {
         return "$season|$tempus|matins|$group"
     }
 
+    private fun resolve(root: JsonObject, k: String): String =
+        // Christmastide falling in Septuagesima uses the Christmas form with the Lenten ending.
+        if (k in root) k else k.replace("nat|norm", "nat|sept").replace("nat|pasch", "nat|sept")
+
+    private fun parseBlocks(arr: JsonArray): List<Block> = arr.map { e ->
+        val o = e.jsonObject
+        Block(
+            o.str("hl")?.takeIf { it.isNotEmpty() && it != "null" },
+            o.str("he")?.takeIf { it.isNotEmpty() && it != "null" },
+            o.getValue("la").jsonArray.strings(),
+            o.getValue("en").jsonArray.strings(),
+        )
+    }
+
+    /**
+     * The hour as said on [d]. Vespers and Compline already belong to the morrow when a new form
+     * begins then: the Saturday before Advent, Christmas Eve, the eve of the Purification, the Saturday
+     * before Septuagesima, Holy Saturday and the Saturday before Trinity.
+     */
     fun blocks(d: LocalDate, hour: String, rubrics: String): List<Block> {
         val root = load(rubrics)
-        var k = key(d, hour)
-        // Christmastide falling in Septuagesima uses the Christmas form with the Lenten ending.
-        if (k !in root) k = k.replace("nat|norm", "nat|sept").replace("nat|pasch", "nat|sept")
-        val arr = root[k] as? JsonArray ?: return emptyList()
-        return arr.map { e ->
-            val o = e.jsonObject
-            Block(
-                o.str("hl")?.takeIf { it.isNotEmpty() && it != "null" },
-                o.str("he")?.takeIf { it.isNotEmpty() && it != "null" },
-                o.getValue("la").jsonArray.strings(),
-                o.getValue("en").jsonArray.strings(),
-            )
-        }
+        val evening = hour == "vespers" || hour == "compline"
+        val formDate = if (evening && key(d.plusDays(1), hour) != key(d, hour)) d.plusDays(1) else d
+        val arr = root[resolve(root, key(formDate, hour))] as? JsonArray ?: return emptyList()
+        val blocks = parseBlocks(arr)
+        if (hour != "compline") return blocks
+        // The final antiphon of Our Lady follows its own dates, which do not match the seasonal forms.
+        val source = root[finalAntiphonKey(d)] as? JsonArray ?: return blocks
+        val wanted = parseBlocks(source).firstOrNull { it.headLa?.startsWith("Antiphona finalis") == true } ?: return blocks
+        return blocks.map { if (it.headLa?.startsWith("Antiphona finalis") == true) wanted else it }
     }
-}
+
+    /**
+     * Where to take the final antiphon said at Compline on [d]: the Alma Redemptoris from the Saturday
+     * before Advent to February 1, the Ave Regina caelorum from February 2 to Holy Week, the Regina caeli
+     * from Holy Saturday to the Friday after Pentecost, and the Salve Regina from Trinity to Advent.
+     */
+    private fun finalAntiphonKey(d: LocalDate): String {
+        val adv = Calendar1962.adventStart(d.year)
+        val e = ChronoUnit.DAYS.between(Calendar1962.easter(d.year), d).toInt()
+        return when {
+            !d.isBefore(adv.minusDays(1)) && d.isBefore(LocalDate.of(d.year, 12, 25)) -> "adv|norm|compline"
+            !d.isBefore(LocalDate.of(d.year, 12, 25)) || d.monthValue == 1 || (d.monthValue == 2 && d.dayOfMonth == 1) -> "nat|norm|compline"
+            e in -1..54 -> "year|pasch|compline"
+            e < -1 -> "year|sept|compline"
+            else -> "year|norm|compline"
+        }
+    }}
 
 /** The collect of each day, 2026–2050, rendered from the Divinum Officium Project. */
 object Collects {
