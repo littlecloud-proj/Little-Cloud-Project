@@ -268,7 +268,15 @@ internal val inlineRubric = Regex("\\((?:$RUBRIC_WORDS)\\)")
 /** The crosses marking where the sign of the cross is made: ✠ the full sign, + on the lips, ✙ on the heart. */
 internal val crossMark = Regex("[✠✙]\uFE0E?|\\+(?= )")
 internal val verseNum = Regex("^(\\d+:\\d+[a-z]?)\\s+(.*)$")
-private val titleLine = Regex("^(Psalmus|Psalm|Canticum|Canticle|Hymnus|Hymn|Lectio|Lesson|Capitulum|Chapter|Absolutio|Absolution|Benedictio|Blessing|Responsorium|Responsory|Invitatorium|Invitatory)\\b.*|^[1-4]?\\s?[A-Z][a-z]{1,4} \\d+:\\d+.*")
+/** Section titles within an hour: psalms, canticles, hymns, lessons, the Te Deum, the nocturn. */
+private val titleLine = Regex(
+    "^(Psalmus|Psalm|Canticum|Canticle|Hymnus|Hymn|Lectio|Lesson|Reading|Capitulum|Chapter|Responsorium|Responsory|Invitatorium|Invitatory)\\b.*" +
+        "|^(Oratio|Prayer|Te Deum|Ad Nocturnum|At the Nocturn)$|^[1-4]?\\s?[A-Z][a-z]{1,4}\\.? \\d+:\\d+.*",
+)
+/** "Absolutio. …" and "Benedictio. …" before the lessons: the word is a label, the rest is said. */
+internal val labelLine = Regex("^(Absolutio|Absolution|Benedictio|Benediction)\\.\\s+(.*)$")
+/** Editorial notes the source carries in braces, such as "{Doxology: Nat}", which are not shown. */
+internal val braces = Regex("\\s*\\{[^}]*\\}")
 
 /** A rubric on its own line: small red italics, as the old books print what is done and not said. */
 @Composable
@@ -285,9 +293,15 @@ private fun RubricNote(text: String) {
 
 /** Office text with any direction inside it set in small red italics. */
 @Composable
-private fun RubricText(text: String, size: Int, color: Color, modifier: Modifier = Modifier) {
+private fun RubricText(text: String, size: Int, color: Color, modifier: Modifier = Modifier, label: String? = null) {
     val rubric = Lc.rubric
     val styled = androidx.compose.ui.text.buildAnnotatedString {
+        if (label != null) {
+            pushStyle(androidx.compose.ui.text.SpanStyle(
+                color = rubric, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic, fontSize = (size * 0.8f).sp,
+            ))
+            append("$label. "); pop()
+        }
         var last = 0
         val marks = (inlineRubric.findAll(text) + crossMark.findAll(text)).sortedBy { it.range.first }
         for (m in marks) {
@@ -321,7 +335,7 @@ private fun OfficeLine(raw: String, latin: Boolean, dim: Boolean) {
     val ink = if (dim) Lc.muted else Lc.ink
     val vm = verseNum.find(raw)
     val num = vm?.groupValues?.get(1)
-    var line = vm?.groupValues?.get(2) ?: raw
+    var line = (vm?.groupValues?.get(2) ?: raw).replace(braces, "")
     leadingRubric.find(line)?.let { r ->
         RubricNote(r.groupValues[1])
         line = line.substring(r.range.last + 1)
@@ -333,6 +347,9 @@ private fun OfficeLine(raw: String, latin: Boolean, dim: Boolean) {
             RubricText(line, size, ink, Modifier.weight(1f))
         }
         line.length < 110 && rubricLine.matches(line) && !line.startsWith("℣") && !line.startsWith("(") -> RubricNote(line)
+        labelLine.matches(line) -> labelLine.find(line)!!.let { m ->
+            RubricText(m.groupValues[2], size, ink, Modifier.padding(vertical = 2.dp), label = m.groupValues[1])
+        }
         titleLine.matches(line) -> LText(line, 14, Lc.muted, Modifier.padding(top = 6.dp, bottom = 2.dp), spacing = 0.04f)
         line.startsWith("℣.") || line.startsWith("℟.") || line.startsWith("Ant.") || line.startsWith("V.") || line.startsWith("R.") -> {
             val cut = line.indexOf(' ').let { if (it < 0) line.length else it }

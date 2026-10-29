@@ -73,10 +73,11 @@ object PrayerBooklet {
         fun line(raw: String): String {
             if (raw == "_") return "<br>"
             val vm = verseNum.find(raw)
-            var t = vm?.groupValues?.get(2) ?: raw
+            var t = (vm?.groupValues?.get(2) ?: raw).replace(braces, "")
             var lead = ""
             leadingRubric.find(t)?.let { lead = "<span class=\"r\">${esc(it.groupValues[1].trim())}</span> "; t = t.substring(it.range.last + 1) }
             if (t.length < 110 && rubricLine.matches(t) && !t.startsWith("℣")) return "<p class=\"r\">${esc(t)}</p>"
+            labelLine.find(t)?.let { m -> lead += "<span class=\"r\">${esc(m.groupValues[1])}.</span> "; t = m.groupValues[2] }
             val body = esc(t).let { e -> inlineRubric.replace(e) { "<span class=\"r\">${it.value}</span>" } }
                 .let { e -> crossMark.replace(e) { "<span class=\"x\">${it.value}</span>" } }
             val num = vm?.groupValues?.get(1)?.let { "<span class=\"n\">$it</span> " }.orEmpty()
