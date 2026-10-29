@@ -349,7 +349,8 @@ fun SettingsScreen(state: AppState, onBack: () -> Unit) {
             }
             Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(Lc.soft).padding(16.dp)) {
                 LText(
-                    "Little Cloud follows the traditional Roman rite, by the rubrics chosen above. " +
+                    "$LITURGY_NOTE " +
+                        "Little Cloud follows the traditional Roman rite, by the rubrics chosen above. " +
                         "The calendar is computed in the app and should be checked against a printed Ordo. " +
                         "Fasting and abstinence are shown as the law stood; your confessor or ordinary may dispense.",
                     15, Lc.muted, lineHeight = 1.45f,

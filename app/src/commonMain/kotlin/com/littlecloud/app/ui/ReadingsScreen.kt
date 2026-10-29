@@ -119,6 +119,7 @@ fun ReadingsScreen(state: AppState, onBack: () -> Unit) {
                     "(Challoner revision), from Project Gutenberg, taken by the citation.",
                 13, Lc.muted,
             )
+            LText(LITURGY_NOTE, 13, Lc.muted)
         }
     }
 }

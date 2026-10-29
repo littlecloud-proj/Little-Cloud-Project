@@ -76,7 +76,6 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
     val scope = rememberCoroutineScope()
     val platform = com.littlecloud.app.platform.LocalPlatform.current
     val tomorrowTitle = remember(today, state.rubrics) { state.dayInfo(today.plusDays(1)).title }
-    val (antiphon, antiphonId) = Calendar1962.finalMarianAntiphon(today)
 
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 18.dp, bottom = 8.dp)) {
@@ -84,8 +83,9 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
             Spacer(Modifier.height(6.dp))
             LText(Calendar1962.littleOfficeSeason(today), 15, Lc.muted)
         }
+        Box(Modifier.weight(1f)) {
         Column(
-            Modifier.weight(1f).verticalScroll(scroll).padding(horizontal = 18.dp).padding(top = 8.dp, bottom = 24.dp),
+            Modifier.fillMaxSize().verticalScroll(scroll).padding(horizontal = 18.dp).padding(top = 8.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             LCard {
@@ -137,6 +137,12 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
                         fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
                     ),
                 )
+                Spacer(Modifier.height(4.dp))
+                androidx.compose.material3.Text(
+                    "✠ make the sign of the cross · + a small cross on the lips · ✙ a small cross on the heart",
+                    color = Lc.rubric,
+                    style = androidx.compose.ui.text.TextStyle(fontFamily = LcFont, fontSize = 14.sp, lineHeight = 19.sp),
+                )
                 Spacer(Modifier.height(12.dp))
                 val rubrics = state.rubrics
                 val officeDate = selected.date
@@ -164,15 +170,12 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
                     if (showEnglish) b.en.forEach { OfficeLine(it, latin = false, dim = showLatin) }
                     Spacer(Modifier.height(12.dp))
                 }
-                if (selected.id == "compline" && antiphonId != null) {
-                    TextLink("Pray the $antiphon on its own") {
-                        nav.openPrayer(com.littlecloud.app.data.PrayerItem(antiphon, prayerId = antiphonId))
-                    }
-                }
                 LText(
                     "Text: Divinum Officium Project. English: Douay-Rheims psalms, Britt’s hymns, other texts from the Bute translation (1908).",
                     13, Lc.muted,
                 )
+                Spacer(Modifier.height(6.dp))
+                LText(LITURGY_NOTE, 13, Lc.muted)
                 Spacer(Modifier.height(16.dp))
                 if (platform.canPrint && blocks.isNotEmpty()) {
                     OutlineButton("Print or save as PDF", Modifier.fillMaxWidth()) {
@@ -197,6 +200,8 @@ fun OfficeScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.
             AnticipationCard(state) { if (it) platform.bells.reschedule() }
 
             LText("Tap a time to change it. The Little Office bell is set on the Bells tab.", 14, Lc.muted)
+        }
+        ScrollIndicator(scroll, Modifier.align(Alignment.CenterEnd).fillMaxHeight())
         }
     }
 
@@ -260,6 +265,8 @@ internal val leadingRubric = Regex(
 )
 /** A direction inside a line, such as "(genuflectitur)" in the Venite. */
 internal val inlineRubric = Regex("\\((?:$RUBRIC_WORDS)\\)")
+/** The crosses marking where the sign of the cross is made: ✠ the full sign, + on the lips, ✙ on the heart. */
+internal val crossMark = Regex("[✠✙]\uFE0E?|\\+(?= )")
 internal val verseNum = Regex("^(\\d+:\\d+[a-z]?)\\s+(.*)$")
 private val titleLine = Regex("^(Psalmus|Psalm|Canticum|Canticle|Hymnus|Hymn|Lectio|Lesson|Capitulum|Chapter|Absolutio|Absolution|Benedictio|Blessing|Responsorium|Responsory|Invitatorium|Invitatory)\\b.*|^[1-4]?\\s?[A-Z][a-z]{1,4} \\d+:\\d+.*")
 
@@ -282,11 +289,17 @@ private fun RubricText(text: String, size: Int, color: Color, modifier: Modifier
     val rubric = Lc.rubric
     val styled = androidx.compose.ui.text.buildAnnotatedString {
         var last = 0
-        for (m in inlineRubric.findAll(text)) {
+        val marks = (inlineRubric.findAll(text) + crossMark.findAll(text)).sortedBy { it.range.first }
+        for (m in marks) {
+            if (m.range.first < last) continue
             append(text.substring(last, m.range.first))
-            pushStyle(androidx.compose.ui.text.SpanStyle(
-                color = rubric, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic, fontSize = (size * 0.8f).sp,
-            ))
+            val cross = crossMark.matches(m.value)
+            pushStyle(
+                if (cross) androidx.compose.ui.text.SpanStyle(color = rubric)
+                else androidx.compose.ui.text.SpanStyle(
+                    color = rubric, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic, fontSize = (size * 0.8f).sp,
+                ),
+            )
             append(m.value); pop()
             last = m.range.last + 1
         }

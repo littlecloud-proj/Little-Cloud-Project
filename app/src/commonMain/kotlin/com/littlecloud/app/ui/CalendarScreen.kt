@@ -137,6 +137,7 @@ fun CalendarScreen(state: AppState, scroll: androidx.compose.foundation.ScrollSt
                 "Fasting follows: ${state.discipline.label}. Change this in Settings. Your confessor or ordinary may dispense.",
                 14, Lc.muted,
             )
+            LText(LITURGY_NOTE, 13, Lc.muted)
         }
     }
 }

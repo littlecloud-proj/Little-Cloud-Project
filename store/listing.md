@@ -35,6 +35,8 @@ PRAYER AND BELLS
 
 Every liturgical and devotional text is taken word for word from published, public-domain sources: the Divinum Officium Project, the Challoner Douay-Rheims Bible and old prayer manuals such as the Raccolta.
 
+Little Cloud is a private aid to prayer, not an approved liturgical book. Where you can, follow your approved missal, breviary and Ordo, and the direction of your priest.
+
 "Behold a little cloud arose out of the sea like a man's foot." (3 Kings 18:44)
 
 **Category:** Lifestyle (or Books & Reference) · **Tags:** Catholic, prayer, liturgy

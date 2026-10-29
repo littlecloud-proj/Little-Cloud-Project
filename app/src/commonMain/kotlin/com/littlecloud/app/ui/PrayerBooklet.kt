@@ -44,7 +44,7 @@ object PrayerBooklet {
                 (p?.subtitle ?: item.note).takeIf { it.isNotBlank() }?.let { "<div class=\"sub\">${esc(it)}</div>" }.orEmpty() +
                 body(state, item) + "</section>"
         }
-        return page(title, date, sections)
+        return page(title, date, sections, liturgical = false)
     }
 
     /** The day's collect, Epistle and Gospel, in the language chosen. */
@@ -78,6 +78,7 @@ object PrayerBooklet {
             leadingRubric.find(t)?.let { lead = "<span class=\"r\">${esc(it.groupValues[1].trim())}</span> "; t = t.substring(it.range.last + 1) }
             if (t.length < 110 && rubricLine.matches(t) && !t.startsWith("℣")) return "<p class=\"r\">${esc(t)}</p>"
             val body = esc(t).let { e -> inlineRubric.replace(e) { "<span class=\"r\">${it.value}</span>" } }
+                .let { e -> crossMark.replace(e) { "<span class=\"x\">${it.value}</span>" } }
             val num = vm?.groupValues?.get(1)?.let { "<span class=\"n\">$it</span> " }.orEmpty()
             return "<p>$num$lead$body</p>"
         }
@@ -95,7 +96,7 @@ object PrayerBooklet {
         return page(hourName, date.format(DateTimeFormatter.ofPattern("EEEE d MMMM yyyy")) + " · The Little Office of the Blessed Virgin Mary", sections)
     }
 
-    private fun page(title: String, top: String, sections: String): String =
+    private fun page(title: String, top: String, sections: String, liturgical: Boolean = true): String =
         """<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face { font-family: Forum; src: url('fonts/Forum-Regular.ttf'); }
 @page { margin: 18mm 16mm; }
@@ -112,10 +113,13 @@ p { margin: 0 0 7pt; }
 .note { color: #7a6f64; font-style: italic; }
 .r { color: #9b2d20; font-style: italic; font-size: 10.5pt; }
 .n { color: #9a8f84; font-size: 9pt; }
+.x { color: #9b2d20; }
+.disc { color: #9a8f84; font-size: 9.5pt; text-align: center; margin-top: 10pt; }
 footer { text-align: center; color: #9a8f84; font-size: 10pt; margin-top: 18pt; }
 </style></head><body>
 <header><div class="d">${esc(top)}</div><h1>${esc(title)}</h1></header>
 $sections
 <footer>Little Cloud · Ecce nubecula parva quasi vestigium hominis</footer>
+${if (liturgical) "<p class=\"disc\">${esc(LITURGY_NOTE)}</p>" else ""}
 </body></html>"""
 }

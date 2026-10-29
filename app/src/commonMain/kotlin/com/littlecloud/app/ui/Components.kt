@@ -1,6 +1,16 @@
 package com.littlecloud.app.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.layout.offset
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -350,5 +360,56 @@ fun SegmentBar(segments: Int, filled: Int) {
                     .background(if (i < filled) Lc.accent else Lc.line)
             )
         }
+    }
+}
+
+/** Said at the foot of the liturgical screens, at the pastor's direction. */
+const val LITURGY_NOTE = "Little Cloud is a private aid to prayer, not an approved liturgical book. " +
+    "Where you can, follow your approved missal, breviary and Ordo, and the direction of your priest."
+
+/**
+ * A thin, always-visible scroll bar for long pages such as an hour of the Office: shows how far
+ * along you are, and can be dragged or tapped to move through the page.
+ */
+@Composable
+fun ScrollIndicator(scroll: androidx.compose.foundation.ScrollState, modifier: Modifier = Modifier) {
+    val max = scroll.maxValue
+    if (max <= 0 || max == Int.MAX_VALUE) return
+    var trackPx by remember { mutableStateOf(0f) }
+    var dragging by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val viewport = scroll.viewportSize.coerceAtLeast(1)
+    val thumbFrac = (viewport.toFloat() / (max + viewport)).coerceIn(0.06f, 1f)
+    val thumbPx = trackPx * thumbFrac
+    fun jump(y: Float) {
+        if (trackPx <= thumbPx) return
+        val frac = ((y - thumbPx / 2) / (trackPx - thumbPx)).coerceIn(0f, 1f)
+        scope.launch { scroll.scrollTo((frac * max).toInt()) }
+    }
+    Box(
+        modifier
+            .width(20.dp)
+            .onSizeChanged { trackPx = it.height.toFloat() }
+            .pointerInput(max) {
+                detectVerticalDragGestures(
+                    onDragStart = { dragging = true; jump(it.y) },
+                    onDragEnd = { dragging = false },
+                    onDragCancel = { dragging = false },
+                ) { change, _ -> change.consume(); jump(change.position.y) }
+            }
+            .pointerInput(max) { detectTapGestures { jump(it.y) } },
+    ) {
+        val top = (trackPx - thumbPx) * scroll.value / max
+        Box(
+            Modifier
+                .align(Alignment.TopEnd)
+                .offset { androidx.compose.ui.unit.IntOffset(0, top.toInt()) }
+                .padding(end = 4.dp)
+                .width(if (dragging) 6.dp else 4.dp)
+                .height(with(density) { thumbPx.toDp() })
+                .clip(RoundedCornerShape(3.dp))
+                .background(Lc.accent.copy(alpha = if (dragging) 0.85f else 0.4f)),
+        )
     }
 }
