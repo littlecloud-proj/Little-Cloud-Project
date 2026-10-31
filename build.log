@@ -1,0 +1,95 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+WARNING: The option setting 'android.buildOnlyTargetAbi=false' is experimental.
+The current default is 'true'.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:kmpPartiallyResolvedDependenciesChecker
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :app:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :app:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForCommonMain
+> Task :app:prepareComposeResourcesTaskForCommonMain
+> Task :app:generateResourceAccessorsForCommonMain
+> Task :app:generateActualResourceCollectorsForAndroidMain
+> Task :app:generateComposeResClass
+> Task :app:generateExpectResourceCollectorsForCommonMain
+> Task :app:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :app:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :app:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:copyDebugComposeResourcesToAndroidAssets
+> Task :app:debugAssetsCopyForAGP NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:processDebugManifestForPackage
+> Task :app:compressDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeDebugJniLibFolders
+> Task :app:checkDebugDuplicateClasses
+> Task :app:mergeDebugNativeLibs
+> Task :app:mergeLibDexDebug
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+
+> Task :app:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so. Run with --info option to learn more.
+
+> Task :app:processDebugResources
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:convertXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForAndroidUnitTest NO-SOURCE
+> Task :app:generateResourceAccessorsForAndroidUnitTest NO-SOURCE
+> Task :app:convertXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForAndroidUnitTestDebug NO-SOURCE
+> Task :app:generateResourceAccessorsForAndroidUnitTestDebug NO-SOURCE
+> Task :app:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :app:generateResourceAccessorsForCommonTest NO-SOURCE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:mergeExtDexDebug
+> Task :app:compileDebugKotlinAndroid
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics
+> Task :app:processDebugJavaRes
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:mergeProjectDexDebug
+> Task :app:mergeDebugJavaResource
+> Task :app:compileDebugUnitTestKotlinAndroid
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+> Task :app:testDebugUnitTest
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1793453004140.json
+
+BUILD SUCCESSFUL in 59s
+49 actionable tasks: 49 executed
