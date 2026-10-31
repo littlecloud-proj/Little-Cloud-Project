@@ -157,10 +157,11 @@ object Calendar1962 {
         val e = daysFromEaster(d)
         if (e in listOf(-39, -37, -36)) return "Ember $day of Lent"
         if (e in listOf(52, 54, 55)) return "Ember $day in the Octave of Pentecost"
-        // September: after the third Sunday of September (1960 rubrics)
-        val thirdSun = LocalDate.of(d.year, 9, 1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).plusWeeks(2)
-        val sep = ChronoUnit.DAYS.between(thirdSun, d).toInt()
-        if (sep in listOf(3, 5, 6)) return "Ember $day in September"
+        // September: the Wednesday, Friday and Saturday after the Exaltation of the Cross (14 September),
+        // as before 1960. (The 1960 rubrics moved them after the third Sunday of September.)
+        val emberWed = LocalDate.of(d.year, 9, 15).with(TemporalAdjusters.nextOrSame(DayOfWeek.WEDNESDAY))
+        val sep = ChronoUnit.DAYS.between(emberWed, d).toInt()
+        if (sep in listOf(0, 2, 3)) return "Ember $day in September"
         // Advent: after the third Sunday of Advent
         val gaudete = adventStart(d.year).plusWeeks(2)
         val adv = ChronoUnit.DAYS.between(gaudete, d).toInt()
