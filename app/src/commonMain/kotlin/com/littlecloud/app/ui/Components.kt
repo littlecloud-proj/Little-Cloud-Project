@@ -363,7 +363,7 @@ fun SegmentBar(segments: Int, filled: Int) {
     }
 }
 
-/** Said at the foot of the liturgical screens, at the pastor's direction. */
+/** Said at the foot of the liturgical screens. */
 const val LITURGY_NOTE = "Little Cloud is a private aid to prayer, not an approved liturgical book. " +
     "Where you can, follow your approved missal, breviary and Ordo, and the direction of your priest."
 

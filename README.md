@@ -20,7 +20,7 @@ Website: [littlecloud-proj.github.io](https://littlecloud-proj.github.io) · [Pr
 ## Rubrics
 By default it follows the rubrics of Pope Pius XII (the simplification of 1955 and the restored Holy Week of 1956), as kept by the CMRI. The rubrics before 1955 (Divino Afflatu) are available in Settings.
 The calendar, collects, readings and Little Office all follow the rubrics chosen.
-A 1962 option has been set aside for now, at the pastor's request. Its calendar code remains in the source, but its data is not bundled and it is not offered in the app.
+A 1962 option has been set aside for now; it may return later with pastoral guidance. Its calendar code remains in the source, but its data is not bundled and it is not offered in the app.
 
 ## Languages
 Latin and English. Spanish is in the code but switched off (`SPANISH_ENABLED` in `Store.kt`) until a traditional public-domain Spanish translation is on file.

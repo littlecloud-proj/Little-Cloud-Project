@@ -183,7 +183,7 @@ const val OWN_NOTE = "Written by you"
 
 /**
  * The rubrics the app can follow: Pius XII (1955, the default) and before 1955. The 1962 option is
- * set aside at the pastor's request while he consults; a saved "1962" falls back to 1955.
+ * set aside for now; a saved "1962" falls back to 1955.
  */
 val RUBRICS = listOf("1955", "1954")
 
