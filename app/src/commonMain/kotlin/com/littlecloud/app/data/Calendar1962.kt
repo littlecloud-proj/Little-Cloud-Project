@@ -537,7 +537,7 @@ object Calendar1962 {
                 when {
                     isFast && full -> FastInfo(true, Abstinence.FULL, reason, "$fastNote $abstNote$holySat$moved")
                     isFast && (ember || vigilPentecost || allSaints) -> FastInfo(true, Abstinence.PARTIAL, reason, "$fastNote $partialNote")
-                    isFast -> FastInfo(true, Abstinence.NONE, reason, "$fastNote Meat is permitted at the principal meal.")
+                    isFast -> FastInfo(true, Abstinence.NONE, reason, "$fastNote Meat only at the principal meal. Those not bound to fast are not limited in eating meat.")
                     full -> FastInfo(false, Abstinence.FULL, reason, abstNote)
                     else -> none
                 }
