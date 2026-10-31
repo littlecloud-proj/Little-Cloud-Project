@@ -17,8 +17,8 @@ enum class Discipline(val label: String, val detail: String) {
         "Canon 1252 as in force in 1962"
     ),
     US_1951(
-        "United States · 1951–1966",
-        "As set by the American bishops, with partial abstinence"
+        "United States",
+        "As kept by the American bishops from 1951, with the changes of 1956 and 1957"
     ),
 }
 
@@ -467,8 +467,16 @@ object Calendar1962 {
                 }
             }
             Discipline.US_1951 -> {
-                val full = friday || e == -46 || e == -1 || vigilAssumption || vigilChristmas
-                val isFast = lent || ember || vigilPentecost || vigilAssumption || vigilAllSaints || vigilChristmas
+                // With the rubrics of 1955: the 1956 Holy Saturday (partial abstinence, to midnight), the
+                // 1957 dispensation of the All Saints vigil, and the Assumption fast moved to 7 December.
+                // With the older rubrics: the rules of 1951 as first set.
+                val after1957 = !pre1955
+                val vigilImmaculate = after1957 && m == md(12, 7) && !sunday
+                val assumption = vigilAssumption && !after1957
+                val allSaints = vigilAllSaints && !after1957
+                val holySatFull = e == -1 && !after1957
+                val full = friday || e == -46 || holySatFull || assumption || vigilImmaculate || vigilChristmas
+                val isFast = lent || ember || vigilPentecost || assumption || allSaints || vigilImmaculate || vigilChristmas
                 val reason = when {
                     e == -46 -> "Ash Wednesday"
                     e == -2 -> "Good Friday"
@@ -476,15 +484,18 @@ object Calendar1962 {
                     lent -> "Lent"
                     ember -> "Ember day"
                     vigilPentecost -> "Vigil of Pentecost"
-                    vigilAssumption -> "Vigil of the Assumption"
-                    vigilAllSaints -> "Vigil of All Saints"
+                    assumption -> "Vigil of the Assumption"
+                    vigilImmaculate -> "Vigil of the Immaculate Conception"
+                    allSaints -> "Vigil of All Saints"
                     vigilChristmas -> "Vigil of the Nativity (by indult, may be kept on 23 December)"
                     friday -> "Friday"
                     else -> ""
                 }
+                val holySat = if (e == -1) (if (after1957) " Fast and abstinence end at midnight (1956)." else " Fast and abstinence end at noon.") else ""
+                val moved = if (vigilImmaculate) " The fast of the Vigil of the Assumption was moved here in 1957." else ""
                 when {
-                    isFast && full -> FastInfo(true, Abstinence.FULL, reason, "$fastNote $abstNote")
-                    isFast -> FastInfo(true, Abstinence.PARTIAL, reason, "$fastNote $partialNote")
+                    isFast && full -> FastInfo(true, Abstinence.FULL, reason, "$fastNote $abstNote$holySat$moved")
+                    isFast -> FastInfo(true, Abstinence.PARTIAL, reason, "$fastNote $partialNote$holySat")
                     full -> FastInfo(false, Abstinence.FULL, reason, abstNote)
                     else -> none
                 }

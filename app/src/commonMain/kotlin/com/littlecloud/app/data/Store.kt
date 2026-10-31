@@ -196,7 +196,7 @@ class AppState {
 
     var theme by mutableStateOf(prefs.getString("theme", "system") ?: "system"); private set
     var discipline by mutableStateOf(
-        runCatching { Discipline.valueOf(prefs.getString("discipline", null) ?: "") }.getOrDefault(Discipline.UNIVERSAL_1917)
+        runCatching { Discipline.valueOf(prefs.getString("discipline", null) ?: "") }.getOrDefault(Discipline.US_1951)
     ); private set
     var officeLang by mutableStateOf(prefs.getString("officeLang", "both") ?: "both"); private set
     var carmelite by mutableStateOf(prefs.getBoolean("carmelite", true)); private set
