@@ -507,13 +507,15 @@ object Calendar1962 {
                 }
             }
             Discipline.US_1951 -> {
-                // With the rubrics of 1955: the 1956 Holy Saturday (partial abstinence, to midnight), the
-                // 1957 dispensation of the All Saints vigil, and the Assumption fast moved to 7 December.
-                // With the older rubrics: the rules of 1951 as first set.
+                // The rules of 1951: complete abstinence on Fridays, Ash Wednesday, Holy Saturday and the
+                // vigils of the Assumption and Christmas; partial abstinence on Ember Wednesdays and Saturdays
+                // and the vigils of Pentecost and All Saints; the other weekdays of Lent are days of fast only.
+                // With the rubrics of 1955: Holy Saturday kept to midnight (1956), the 1957 dispensation of
+                // the All Saints vigil, and the Assumption fast moved to 7 December.
                 val vigilImmaculate = after1957 && m == md(12, 7) && !sunday
                 val assumption = vigilAssumption && !after1957
                 val allSaints = vigilAllSaints && !after1957
-                val holySatFull = e == -1 && !after1957
+                val holySatFull = e == -1
                 val full = friday || e == -46 || holySatFull || assumption || vigilImmaculate || vigilChristmas
                 val isFast = lent || ember || vigilPentecost || assumption || allSaints || vigilImmaculate || vigilChristmas
                 val reason = when {
@@ -534,7 +536,8 @@ object Calendar1962 {
                 val moved = if (vigilImmaculate) " The fast of the Vigil of the Assumption was moved here in 1957." else ""
                 when {
                     isFast && full -> FastInfo(true, Abstinence.FULL, reason, "$fastNote $abstNote$holySat$moved")
-                    isFast -> FastInfo(true, Abstinence.PARTIAL, reason, "$fastNote $partialNote$holySat")
+                    isFast && (ember || vigilPentecost || allSaints) -> FastInfo(true, Abstinence.PARTIAL, reason, "$fastNote $partialNote")
+                    isFast -> FastInfo(true, Abstinence.NONE, reason, "$fastNote Meat is permitted at the principal meal.")
                     full -> FastInfo(false, Abstinence.FULL, reason, abstNote)
                     else -> none
                 }

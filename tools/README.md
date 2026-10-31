@@ -11,3 +11,11 @@ Scripts used to generate the bundled data. They are not part of the app build.
   Paths inside the scripts point at the original working folders (/tmp/da, /tmp/do); adjust before rerunning.
 - `prayers/` – builds `MorePrayers.kt` and related prayer texts from the public-domain
   sources in `prayers/sources/` (Hammer 1909, Gahan, Lyra Liturgica, Carmelite manual 1850, Raccolta 1880).
+
+## Note on the 1955 harvest
+
+Divinum Officium's "Reduced - 1955" version borrows the 1960 tempora table, which turns the Seven Sorrows
+on the Friday of Passion Week into a commemoration. Under the 1955 rubrics it is still a greater double, so
+before harvesting, the line `Tempora/Quad5-5=Tempora/Quad5-5Feria;;1960 Newcal` in
+`web/www/Tabulae/Tempora/Generale.txt` is changed to apply to `Newcal` only. The Mass of that day takes the
+readings of 15 September (Judith 13, John 19).

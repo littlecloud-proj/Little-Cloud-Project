@@ -62,6 +62,35 @@ class TimeAndCalendarTest {
         assertEquals(Abstinence.FULL, friday.abstinence)
     }
 
+    /** American rules against the 2026 CMRI wall calendar: F = fast and complete abstinence,
+     *  P = fast and partial abstinence, f = fast only, A = abstinence only, - = neither. */
+    @Test fun usFasting2026() {
+        val marks = mapOf(
+            d(2026, 1, 2) to 'A', d(2026, 1, 1) to '-', d(2026, 2, 13) to 'A',
+            d(2026, 2, 18) to 'F', d(2026, 2, 19) to 'f', d(2026, 2, 20) to 'F', d(2026, 2, 21) to 'f',
+            d(2026, 2, 22) to '-', d(2026, 2, 25) to 'P', d(2026, 2, 27) to 'F', d(2026, 2, 28) to 'P',
+            d(2026, 3, 19) to 'f', d(2026, 3, 25) to 'f', d(2026, 4, 2) to 'f',
+            d(2026, 4, 3) to 'F', d(2026, 4, 4) to 'F', d(2026, 4, 10) to 'A',
+            d(2026, 5, 13) to '-', d(2026, 5, 23) to 'P', d(2026, 5, 27) to 'P', d(2026, 5, 29) to 'F',
+            d(2026, 5, 30) to 'P', d(2026, 6, 12) to 'A', d(2026, 6, 23) to '-',
+            d(2026, 8, 14) to 'A', d(2026, 9, 16) to 'P', d(2026, 9, 18) to 'F', d(2026, 9, 19) to 'P',
+            d(2026, 10, 31) to '-', d(2026, 11, 27) to '-', d(2026, 12, 7) to 'F',
+            d(2026, 12, 16) to 'P', d(2026, 12, 18) to 'F', d(2026, 12, 19) to 'P',
+            d(2026, 12, 24) to 'F', d(2026, 12, 25) to '-',
+        )
+        for ((day, want) in marks) {
+            val f = Calendar1962.fasting(day, Discipline.US_1951)
+            val got = when {
+                f.fast && f.abstinence == Abstinence.FULL -> 'F'
+                f.fast && f.abstinence == Abstinence.PARTIAL -> 'P'
+                f.fast -> 'f'
+                f.abstinence == Abstinence.FULL -> 'A'
+                else -> '-'
+            }
+            assertEquals(want, got, "fasting on $day")
+        }
+    }
+
     @Test fun littleOfficeKeys() {
         assertEquals("year|norm|lauds", LittleOffice.key(d(2026, 10, 16), "lauds"))
         assertEquals("adv|norm|matins|A", LittleOffice.key(d(2026, 12, 3), "matins"))   // Thursday of Advent
