@@ -559,16 +559,16 @@ object Calendar1962 {
 
     fun monthDevotion(month: Int): String = when (month) {
         1 -> "Month of the Holy Name of Jesus"
-        2 -> "Month of the Holy Family"
+        2 -> "Month of the Sacred Passion"
         3 -> "Month of St. Joseph"
-        4 -> "Month of the Holy Eucharist"
-        5 -> "Month of Our Lady"
-        6 -> "Month of the Sacred Heart"
+        4 -> "Month of the Blessed Sacrament"
+        5 -> "Month of Our Blessed Mother"
+        6 -> "Month of the Sacred Heart of Jesus"
         7 -> "Month of the Precious Blood"
-        8 -> "Month of the Immaculate Heart"
-        9 -> "Month of the Seven Sorrows"
+        8 -> "Month of the Immaculate Heart of Mary"
+        9 -> "Month of Our Sorrowful Mother"
         10 -> "Month of the Holy Rosary"
         11 -> "Month of the Holy Souls"
-        else -> "Month of the Immaculate Conception"
+        else -> "Month of the Divine Infancy"
     }
 }
