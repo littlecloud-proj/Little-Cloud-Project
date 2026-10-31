@@ -464,6 +464,14 @@ object Calendar1962 {
             else "The $what of the ${base.reason} is lifted on a holy day of obligation (canon 1252 §4)."
             return none.copy(exemption = text)
         }
+        // The day after Thanksgiving (the fourth Thursday of November) in the United States.
+        val afterThanksgiving = after1957 && d.monthValue == 11 && friday && d.dayOfMonth in 23..29
+        if (afterThanksgiving && !lent) {
+            return none.copy(
+                exemption = "Abstinence on the Friday after Thanksgiving is dispensed in the United States, " +
+                    "by an indult first granted in 1958 and by the American dioceses afterward.",
+            )
+        }
         // Days the American rules after 1957 no longer keep.
         val usNote = when {
             !after1957 -> ""
