@@ -29,6 +29,11 @@ data class FastInfo(
     val abstinence: Abstinence,
     val reason: String,
     val note: String,
+    /**
+     * Why a fast or abstinence someone might expect does not apply today (or was moved), on the few
+     * days where that is so; empty otherwise.
+     */
+    val exemption: String = "",
 ) {
     val any: Boolean get() = fast || abstinence != Abstinence.NONE
     val headline: String
@@ -418,7 +423,7 @@ object Calendar1962 {
         }
     }
 
-    fun fasting(d: LocalDate, discipline: Discipline, pre1955: Boolean = false): FastInfo {
+    fun fasting(d: LocalDate, discipline: Discipline, pre1955: Boolean = false, ignoreHolyDay: Boolean = false): FastInfo {
         val e = daysFromEaster(d)
         val dow = d.dayOfWeek
         val sunday = dow == DayOfWeek.SUNDAY
@@ -437,11 +442,37 @@ object Calendar1962 {
         val partialNote = "Meat may be taken once, at the principal meal."
         val none = FastInfo(false, Abstinence.NONE, "", "")
 
-        if (sunday) return none
-        // A holy day of obligation outside Lent lifts fast and abstinence.
-        if (holyDay && !lent) return none
+        val after1957 = discipline == Discipline.US_1951 && !pre1955
+        if (sunday) {
+            // Canon 1252 §4: no fast on Sunday, and a vigil's fast is not moved to the Saturday.
+            val vigil = when {
+                m == md(12, 24) -> "Vigil of the Nativity"
+                m == md(12, 7) && after1957 -> "Eve of the Immaculate Conception"
+                m == md(8, 14) && !after1957 -> "Vigil of the Assumption"
+                m == md(10, 31) && !after1957 -> "Vigil of All Saints"
+                else -> null
+            }
+            return if (vigil == null) none
+            else none.copy(exemption = "The fast of the $vigil is not kept on a Sunday, nor moved to the Saturday (canon 1252 §4).")
+        }
+        // A holy day of obligation outside Lent lifts fast and abstinence (canon 1252 §4).
+        if (holyDay && !lent && !ignoreHolyDay) {
+            val base = fasting(d, discipline, pre1955, ignoreHolyDay = true)
+            if (!base.any) return none
+            val what = if (base.fast) "fast and abstinence" else "abstinence"
+            val text = if (base.reason == "Friday" || base.reason.isEmpty()) "Friday $what is lifted on a holy day of obligation (canon 1252 §4)."
+            else "The $what of the ${base.reason} is lifted on a holy day of obligation (canon 1252 §4)."
+            return none.copy(exemption = text)
+        }
+        // Days the American rules after 1957 no longer keep.
+        val usNote = when {
+            !after1957 -> ""
+            m == md(10, 31) -> "The Vigil of All Saints was a day of fast and abstinence under the Code of 1917; the American bishops dispensed it in 1957."
+            m == md(8, 14) -> "The fast of the Vigil of the Assumption was moved to December 7 in 1957."
+            else -> ""
+        }
 
-        return when (discipline) {
+        val result = when (discipline) {
             Discipline.UNIVERSAL_1917 -> {
                 val reason = when {
                     e == -46 -> "Ash Wednesday"
@@ -470,7 +501,6 @@ object Calendar1962 {
                 // With the rubrics of 1955: the 1956 Holy Saturday (partial abstinence, to midnight), the
                 // 1957 dispensation of the All Saints vigil, and the Assumption fast moved to 7 December.
                 // With the older rubrics: the rules of 1951 as first set.
-                val after1957 = !pre1955
                 val vigilImmaculate = after1957 && m == md(12, 7) && !sunday
                 val assumption = vigilAssumption && !after1957
                 val allSaints = vigilAllSaints && !after1957
@@ -501,6 +531,7 @@ object Calendar1962 {
                 }
             }
         }
+        return if (usNote.isEmpty()) result else result.copy(exemption = usNote)
     }
 
     /** The next day (after [from]) that carries fast or abstinence, within ~6 weeks. */

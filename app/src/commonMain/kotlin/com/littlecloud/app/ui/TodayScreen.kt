@@ -139,6 +139,7 @@ private fun FastRow(state: AppState, nav: Nav) {
     val next = if (f.any) null else Calendar1962.nextPenitentialDay(state.today, state.discipline, state.pre1955)
     val sub = when {
         f.any -> f.reason
+        f.exemption.isNotEmpty() -> f.exemption
         next != null -> "Next: ${next.second.headline.lowercase()} · ${next.first.format(shortDate)}"
         else -> ""
     }

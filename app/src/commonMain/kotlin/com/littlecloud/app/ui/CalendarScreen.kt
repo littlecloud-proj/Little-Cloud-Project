@@ -120,6 +120,10 @@ fun CalendarScreen(state: AppState, scroll: androidx.compose.foundation.ScrollSt
                         LText(sel.fast.headline + if (sel.fast.reason.isNotEmpty()) " · ${sel.fast.reason}" else "", 16)
                         Spacer(Modifier.height(2.dp))
                         if (sel.fast.note.isNotEmpty()) LText(sel.fast.note, 14, Lc.muted)
+                        if (sel.fast.exemption.isNotEmpty()) {
+                            Spacer(Modifier.height(4.dp))
+                            LText(sel.fast.exemption, 14, Lc.muted)
+                        }
                     }
                 }
             }

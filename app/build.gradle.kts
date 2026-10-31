@@ -58,7 +58,7 @@ android {
         applicationId = "org.littlecloudproject.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 24
+        versionCode = 25
         versionName = "1.0-beta2"
     }
 
