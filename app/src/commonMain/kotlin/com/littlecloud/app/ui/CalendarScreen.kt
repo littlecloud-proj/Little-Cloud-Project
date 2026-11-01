@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.littlecloud.app.resources.*
 import com.littlecloud.app.data.Abstinence
+import com.littlecloud.app.data.Calendar1962
 import com.littlecloud.app.data.AppState
 import com.littlecloud.app.data.LColor
 import com.littlecloud.app.time.*
@@ -101,6 +102,9 @@ fun CalendarScreen(state: AppState, scroll: androidx.compose.foundation.ScrollSt
                 Heading(sel.title, 27)
                 Spacer(Modifier.height(4.dp))
                 LText("${sel.rankLabel} · ${sel.color.label} · ${sel.season}", 16, Lc.muted)
+                if (Calendar1962.holyDayOfObligation(selected, state.discipline)) {
+                    Spacer(Modifier.height(4.dp)); LText("Holy day of obligation", 16, Lc.rubric)
+                }
                 sel.commemorations.forEach { Spacer(Modifier.height(8.dp)); LText("Commemoration: $it", 16) }
                 sel.carmelite?.let {
                     Spacer(Modifier.height(12.dp))
@@ -151,8 +155,10 @@ private fun DayCell(modifier: Modifier, state: AppState, date: LocalDate, select
     val info = state.dayInfo(date)
     val bg = when { selected -> Lc.accent; today -> Lc.soft; else -> Color.Transparent }
     val fg = if (selected) Lc.on else Lc.ink
+    val holy = Calendar1962.holyDayOfObligation(date, state.discipline)
     val desc = buildString {
         append("${date.dayOfMonth} ${date.month.name.lowercase()}, ${info.title}")
+        if (holy) append(", holy day of obligation")
         if (info.fast.any) append(", ${info.fast.headline}")
     }
     Column(
@@ -165,7 +171,7 @@ private fun DayCell(modifier: Modifier, state: AppState, date: LocalDate, select
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        LText(date.dayOfMonth.toString(), 18, fg)
+        LText(date.dayOfMonth.toString(), 18, if (holy && !selected) Lc.rubric else fg)
         Spacer(Modifier.height(3.dp))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
             val dot = Modifier.size(7.dp).clip(RoundedCornerShape(4.dp)).background(Color(info.color.argb))

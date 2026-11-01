@@ -62,6 +62,15 @@ class TimeAndCalendarTest {
         assertEquals(Abstinence.FULL, friday.abstinence)
     }
 
+    @Test fun holyDays2026() {
+        val us = listOf(d(2026, 1, 1), d(2026, 5, 14), d(2026, 8, 15), d(2026, 11, 1), d(2026, 12, 8), d(2026, 12, 25))
+        us.forEach { assertTrue(Calendar1962.holyDayOfObligation(it, Discipline.US_1951), "$it") }
+        listOf(d(2026, 1, 6), d(2026, 3, 19), d(2026, 6, 4), d(2026, 6, 29)).forEach {
+            assertTrue(!Calendar1962.holyDayOfObligation(it, Discipline.US_1951), "$it")
+            assertTrue(Calendar1962.holyDayOfObligation(it, Discipline.UNIVERSAL_1917), "$it")
+        }
+    }
+
     /** American rules against the 2026 CMRI wall calendar: F = fast and complete abstinence,
      *  P = fast and partial abstinence, f = fast only, A = abstinence only, - = neither. */
     @Test fun usFasting2026() {

@@ -69,6 +69,9 @@ fun TodayScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.S
                 Heading(day.title, 32)
                 Spacer(Modifier.height(4.dp))
                 LText("${day.rankLabel} · ${day.color.label}", 16, Lc.muted)
+                if (Calendar1962.holyDayOfObligation(today, state.discipline)) {
+                    Spacer(Modifier.height(4.dp)); LText("Holy day of obligation", 16, Lc.rubric)
+                }
                 day.commemorations.forEach {
                     Spacer(Modifier.height(6.dp)); LText("Commemoration: $it", 15)
                 }

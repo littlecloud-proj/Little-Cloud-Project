@@ -413,7 +413,8 @@ object Calendar1962 {
 
     // ---------- fasting and abstinence ----------
 
-    private fun holyDayOfObligation(d: LocalDate, discipline: Discipline): Boolean {
+    /** A holy day of obligation under the chosen discipline (canon 1247; the American list since 1885). */
+    fun holyDayOfObligation(d: LocalDate, discipline: Discipline): Boolean {
         val e = daysFromEaster(d)
         val m = MonthDay.from(d)
         val us = setOf(md(1, 1), md(8, 15), md(11, 1), md(12, 8), md(12, 25))
