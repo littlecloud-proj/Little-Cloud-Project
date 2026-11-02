@@ -171,7 +171,7 @@ private fun DayCell(modifier: Modifier, state: AppState, date: LocalDate, select
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        LText(date.dayOfMonth.toString(), 18, if (holy && !selected) Lc.rubric else fg)
+        LText(date.dayOfMonth.toString(), 18, if ((holy || date.dayOfWeek == DayOfWeek.SUNDAY) && !selected) Lc.rubric else fg)
         Spacer(Modifier.height(3.dp))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
             val dot = Modifier.size(7.dp).clip(RoundedCornerShape(4.dp)).background(Color(info.color.argb))
