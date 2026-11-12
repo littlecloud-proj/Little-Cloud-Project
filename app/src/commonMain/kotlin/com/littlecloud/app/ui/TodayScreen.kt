@@ -81,6 +81,10 @@ fun TodayScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.S
                         LText("Carmelite proper · $it", 15)
                     }
                 }
+                if (!rememberLives(state, today).isNullOrEmpty()) {
+                    Spacer(Modifier.height(6.dp))
+                    TextLink(if (day.title.startsWith("St")) "Life of the saint" else "About this feast") { nav.openLives() }
+                }
                 Spacer(Modifier.height(14.dp)); HLine(); Spacer(Modifier.height(12.dp))
                 Eyebrow("Collect")
                 Spacer(Modifier.height(6.dp))
@@ -249,5 +253,6 @@ interface Nav {
     fun openIntimacy()
     fun openSettings()
     fun openReadings()
+    fun openLives()
     fun arrange(evening: Boolean)
 }

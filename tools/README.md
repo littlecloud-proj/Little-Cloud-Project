@@ -11,6 +11,9 @@ Scripts used to generate the bundled data. They are not part of the app build.
   Paths inside the scripts point at the original working folders (/tmp/da, /tmp/do); adjust before rerunning.
 - `prayers/` – builds `MorePrayers.kt` and related prayer texts from the public-domain
   sources in `prayers/sources/` (Hammer 1909, Gahan, Lyra Liturgica, Carmelite manual 1850, Raccolta 1880).
+- `lives/` – builds `lives.json`, the short accounts of feasts and saints from the Lasance missal (1937).
+  `lasance-accounts.txt` is the transcribed text; `build.py` ties each account to the calendar titles;
+  `REVIEW.md` lists what is still to be proofread or added.
 
 ## Note on the 1955 harvest
 

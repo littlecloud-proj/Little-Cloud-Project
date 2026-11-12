@@ -32,6 +32,7 @@ Latin and English. Spanish is in the code but switched off (`SPANISH_ENABLED` in
 ## Sources
 - **Calendar, collects, Little Office, Mass readings (Latin):** the Divinum Officium Project.
 - **Readings (English):** the Douay-Rheims Bible (Challoner), Project Gutenberg #8300, taken by each citation.
+- **Lives of the saints:** the “Short Accounts of Certain Feasts and Lives of Saints” in *The New Roman Missal* of Rev. F. X. Lasance (Benziger Brothers, 1937), public domain. A sample only so far; see `tools/lives/REVIEW.md`.
 - **Prayers:** public-domain manuals, listed in `tools/`.
 
 ## Layout

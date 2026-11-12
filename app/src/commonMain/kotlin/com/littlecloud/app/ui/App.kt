@@ -21,6 +21,7 @@ private sealed interface Overlay {
     data object Intimacy : Overlay
     data object Settings : Overlay
     data object Readings : Overlay
+    data object Lives : Overlay
 }
 
 @Composable
@@ -61,6 +62,7 @@ private fun AppContent(state: AppState, openRequest: MutableState<String?>) {
                 override fun openIntimacy() { overlay = Overlay.Intimacy }
                 override fun openSettings() { overlay = Overlay.Settings }
                 override fun openReadings() { overlay = Overlay.Readings }
+                override fun openLives() { overlay = Overlay.Lives }
                 override fun arrange(evening: Boolean) { eveningTab = evening; overlay = null; setTab(Tab.PRAYERS) }
                 fun setTab(t: Tab) { tab = t }
             }
@@ -75,6 +77,7 @@ private fun AppContent(state: AppState, openRequest: MutableState<String?>) {
                 o.startsWith("prayer:") -> nav.openPrayer(PrayerItem("", prayerId = o.removePrefix("prayer:")), null)
                 o == "settings" -> nav.openSettings()
                 o == "readings" -> nav.openReadings()
+                o == "lives" -> nav.openLives()
                 // "scroll:900" opens Today partway down (used for screenshots).
                 o.startsWith("scroll:") -> {
                     nav.goTab(Tab.TODAY)
@@ -98,6 +101,7 @@ private fun AppContent(state: AppState, openRequest: MutableState<String?>) {
                     Overlay.Intimacy -> IntimacyScreen(state) { overlay = null }
                     Overlay.Settings -> SettingsScreen(state) { overlay = null }
                     Overlay.Readings -> ReadingsScreen(state) { overlay = null }
+                    Overlay.Lives -> LivesScreen(state) { overlay = null }
                     null -> when (tab) {
                         Tab.TODAY -> TodayScreen(state, nav, todayScroll)
                         Tab.HOURS -> OfficeScreen(state, nav, officeScroll)
