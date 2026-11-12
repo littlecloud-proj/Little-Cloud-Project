@@ -90,6 +90,11 @@ private fun AppContent(state: AppState, openRequest: MutableState<String?>) {
             openRequest.value = null
         }
 
+        // Follow the date while the app stays open past midnight.
+        LaunchedEffect(Unit) {
+            while (true) { kotlinx.coroutines.delay(30_000); state.refreshDay() }
+        }
+
         PlatformBackHandler(enabled = overlay != null || tab != Tab.TODAY) {
             if (overlay != null) overlay = null else tab = Tab.TODAY
         }

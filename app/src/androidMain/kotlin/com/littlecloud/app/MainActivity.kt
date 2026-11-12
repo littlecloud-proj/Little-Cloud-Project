@@ -24,7 +24,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         state = AppState()
-        openRequest.value = intent?.getStringExtra(EXTRA_OPEN)
+        // Only on a fresh start: a restored screen must not open the last bell's page again.
+        if (savedInstanceState == null) openRequest.value = intent?.getStringExtra(EXTRA_OPEN)
         BellScheduler.rescheduleAll(applicationContext)
         val platform = AndroidPlatform(this)
         setContent { LittleCloudApp(state, openRequest, platform) }

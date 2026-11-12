@@ -180,7 +180,13 @@ class BellReceiver : BroadcastReceiver() {
             }
         }
         if (bell.loud) {
-            BellService.start(ctx, title, body, sound, opens)
+            // Without exact alarms, Android 12+ may refuse to start the ringing service from the
+            // background; the bell then comes as an ordinary notification rather than not at all.
+            try {
+                BellService.start(ctx, title, body, sound, opens)
+            } catch (e: Exception) {
+                notify(ctx, title, body, sound, bell.id * 100 + idx, opens)
+            }
         } else {
             notify(ctx, title, body, sound, bell.id * 100 + idx, opens)
         }

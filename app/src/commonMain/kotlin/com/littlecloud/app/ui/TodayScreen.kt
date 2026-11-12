@@ -81,11 +81,15 @@ fun TodayScreen(state: AppState, nav: Nav, scroll: androidx.compose.foundation.S
                         LText("Carmelite proper · $it", 15)
                     }
                 }
-                if (!rememberLives(state, today).isNullOrEmpty()) {
-                    Spacer(Modifier.height(6.dp))
-                    TextLink(if (day.title.startsWith("St")) "Life of the saint" else "About this feast") { nav.openLives() }
+                // The link is a 44dp touch target with its words in the middle, so it brings its own
+                // space above and below, and is drawn back 4dp to line up with the text of the card.
+                val hasLife = !rememberLives(state, today).isNullOrEmpty()
+                if (hasLife) {
+                    Box(Modifier.offset(x = (-4).dp)) {
+                        TextLink(if (day.title.startsWith("St")) "Life of the saint" else "About this feast") { nav.openLives() }
+                    }
                 }
-                Spacer(Modifier.height(14.dp)); HLine(); Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(if (hasLife) 0.dp else 14.dp)); HLine(); Spacer(Modifier.height(12.dp))
                 Eyebrow("Collect")
                 Spacer(Modifier.height(6.dp))
                 CollectText(state, today)

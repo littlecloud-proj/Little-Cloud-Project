@@ -102,18 +102,23 @@ object Store {
     fun loadBells(): List<Bell> {
         val raw = prefs().getString("bells", null) ?: return defaultBells
         return try {
-            Json.parseToJsonElement(raw).jsonArray.map { e ->
-                val o = e.jsonObject
-                Bell(
-                    id = o.int("id"),
-                    name = o.str("name")!!,
-                    times = o.getValue("times").jsonArray.map { it.jsonPrimitive.int },
-                    sound = o.str("sound")!!,
-                    enabled = o.getValue("enabled").jsonPrimitive.boolean,
-                    opens = o.str("opens"),
-                    loud = o["loud"]?.jsonPrimitive?.booleanOrNull ?: false,
-                )
+            // A bell that cannot be read is skipped, so one damaged entry does not cost the rest.
+            val saved = Json.parseToJsonElement(raw).jsonArray
+            val bells = saved.mapNotNull { e ->
+                runCatching {
+                    val o = e.jsonObject
+                    Bell(
+                        id = o.int("id"),
+                        name = o.str("name") ?: "Bell",
+                        times = o.getValue("times").jsonArray.map { it.jsonPrimitive.int },
+                        sound = o.str("sound") ?: "tower",
+                        enabled = o["enabled"]?.jsonPrimitive?.booleanOrNull ?: true,
+                        opens = o.str("opens"),
+                        loud = o["loud"]?.jsonPrimitive?.booleanOrNull ?: false,
+                    )
+                }.getOrNull()
             }
+            if (bells.isEmpty() && saved.isNotEmpty()) defaultBells else bells
         } catch (e: Exception) {
             defaultBells
         }

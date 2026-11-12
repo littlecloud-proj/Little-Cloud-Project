@@ -17,7 +17,7 @@ import com.littlecloud.app.R
 
 /**
  * Rings a bell like an alarm clock: on the alarm stream, so it sounds even when the
- * ringer is silenced, with a full-screen page over the lock screen.
+ * ringer is silenced, with a notification that opens the ringing page and a button to stop it.
  */
 class BellService : Service() {
 

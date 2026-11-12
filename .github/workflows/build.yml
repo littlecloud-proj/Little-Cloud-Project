@@ -3,6 +3,8 @@ name: Build
 on:
   push:
     branches-ignore: ['ci-logs/**']
+    # Nothing here changes the app, so no build is needed.
+    paths-ignore: ['**.md', 'site/**', 'store/**', 'licenses/**', 'LICENSE', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 concurrency:
@@ -18,8 +20,8 @@ jobs:
     env:
       HAS_UPLOAD_KEY: ${{ secrets.UPLOAD_KEYSTORE_B64 != '' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
@@ -72,8 +74,8 @@ jobs:
   ios:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
