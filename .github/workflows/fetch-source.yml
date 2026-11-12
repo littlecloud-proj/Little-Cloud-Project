@@ -1,0 +1,20 @@
+name: Fetch source text (temporary)
+on:
+  push:
+    branches: ['ci-logs/fetch-lasance']
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and publish
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir out && cd out && git init -q -b main
+          curl -fsSL --retry 3 -o lasance-djvu.txt https://archive.org/download/fr-lasance-missal-1937/fr-lasance-missal-1937_djvu.txt
+          curl -fsSL --retry 3 -o meta.xml https://archive.org/download/fr-lasance-missal-1937/fr-lasance-missal-1937_meta.xml || true
+          ls -la; sha256sum lasance-djvu.txt > SHA256
+          git add . && git -c user.name=ci -c user.email=ci@localhost commit -qm "source text"
+          git push -qf "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/ci-logs/lasance-src
