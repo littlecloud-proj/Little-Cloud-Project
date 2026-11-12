@@ -20,8 +20,8 @@ THE LITTLE OFFICE OF THE BLESSED VIRGIN MARY
 THE TRADITIONAL CALENDAR
 • The rubrics of Pope Pius XII (1955, with the restored Holy Week of 1956), or those before 1955
 • The feast of the day with its rank, colour and commemorations, from 2026 to 2050
-• Fast and abstinence as the law stood, under the Code of 1917 or the American rules of 1951
-• Our Lady of Guadalupe and an optional Carmelite proper
+• Fast and abstinence as the law stood, under the Code of 1917 or the American rules of 1951, with a note when a fast is lifted or dispensed
+• Holy days of obligation marked; Our Lady of Guadalupe, American feasts with the American rules, and an optional Carmelite proper
 
 THE DAY'S MASS
 • The collect, Epistle and Gospel in Latin and English (Douay-Rheims)
