@@ -41,8 +41,8 @@ Little Cloud is a private aid to prayer, not an approved liturgical book. Where 
 
 **Category:** Lifestyle (or Books & Reference) · **Tags:** Catholic, prayer, liturgy
 **Contact email:** LittleCloudProject@proton.me
-**Privacy policy:** https://littlecloud-proj.github.io/privacy.html
-**Website:** https://littlecloud-proj.github.io
+**Privacy policy:** https://littlecloud-proj.github.io/Little-Cloud-Project/privacy.html
+**Website:** https://littlecloud-proj.github.io/Little-Cloud-Project/
 
 ### Data safety
 - Does the app collect or share user data? **No.**
@@ -63,8 +63,8 @@ Little Cloud is a private aid to prayer, not an approved liturgical book. Where 
 **Promotional text** (170 max): The Little Office of Our Lady, the traditional calendar, the day's Epistle and Gospel, and prayer bells. Free, offline, with no ads or accounts.
 **Keywords** (100 max): catholic,latin,office,breviary,rosary,angelus,carmelite,traditional,missal,prayer,liturgy,bells
 **Description:** as for Google Play.
-**Support URL:** https://littlecloud-proj.github.io/support.html
-**Privacy policy URL:** https://littlecloud-proj.github.io/privacy.html
+**Support URL:** https://littlecloud-proj.github.io/Little-Cloud-Project/support.html
+**Privacy policy URL:** https://littlecloud-proj.github.io/Little-Cloud-Project/privacy.html
 **Category:** Reference (secondary: Lifestyle)
 **Age rating:** 4+
 **App privacy:** Data Not Collected

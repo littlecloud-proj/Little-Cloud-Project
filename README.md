@@ -7,7 +7,7 @@ It works fully offline, has no internet permission, no ads and no accounts, and 
 
 Little Cloud is a private aid to prayer, not an approved liturgical book. Where you can, follow your approved missal, breviary and Ordo, and the direction of your priest.
 
-Website: [littlecloud-proj.github.io](https://littlecloud-proj.github.io) · [Privacy policy](https://littlecloud-proj.github.io/privacy.html) · [Support](https://littlecloud-proj.github.io/support.html)
+Website: [littlecloud-proj.github.io/Little-Cloud-Project](https://littlecloud-proj.github.io/Little-Cloud-Project/) · [Privacy policy](https://littlecloud-proj.github.io/Little-Cloud-Project/privacy.html) · [Support](https://littlecloud-proj.github.io/Little-Cloud-Project/support.html)
 
 ## What it has
 - **The Little Office of the Blessed Virgin Mary:** every hour from Matins to Compline in Latin, English or both, with its seasonal forms (Vespers and Compline taking the morrow's form on the eve of a new season) and the final antiphon of Our Lady by its own dates. Bows, genuflections, the signs of the cross and other directions are marked in red. Each hour can be marked as said or printed and saved as a PDF, and Matins and Lauds can be said the evening before.
