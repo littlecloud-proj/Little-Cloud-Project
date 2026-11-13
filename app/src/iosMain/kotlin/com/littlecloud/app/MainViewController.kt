@@ -25,7 +25,8 @@ fun setUpNotifications() {
  * bells do on Android: "office", "intimacy", "settings", "tab:calendar", "prayer:angelus" …
  */
 fun MainViewController(open: String?): UIViewController {
-    openRequest.value = open
+    // Only when a screen is asked for: a bell tapped while the app was closed may already have set one.
+    if (open != null) openRequest.value = open
     return ComposeUIViewController { LittleCloudApp(state, openRequest, IosPlatform) }
 }
 

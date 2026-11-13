@@ -53,6 +53,9 @@ interface PlatformActions {
     fun cancelPrayerTimer()
 
     val bells: BellSystem
+
+    /** Whether a swipe in from the left edge goes back, as on iPhone, where there is no back button. */
+    val swipeBack: Boolean get() = false
 }
 
 /** How each phone schedules and sounds the bells. */

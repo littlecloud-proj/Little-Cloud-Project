@@ -83,6 +83,7 @@ object IosPlatform : PlatformActions {
     }
 
     override val bells = IosBells
+    override val swipeBack = true
 
     override fun startPrayerTimer(minutes: Int): Long {
         IosBells.prayerTimer(minutes, TIMER_ID)

@@ -8,7 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.dp
 import com.littlecloud.app.data.AppState
 import com.littlecloud.app.data.PrayerItem
 import com.littlecloud.app.platform.LocalPlatform
@@ -99,7 +104,29 @@ private fun AppContent(state: AppState, openRequest: MutableState<String?>) {
             if (overlay != null) overlay = null else tab = Tab.TODAY
         }
 
-        Column(Modifier.fillMaxSize().background(Lc.bg)) {
+        // On iPhone a swipe in from the left edge goes back. The touch is only watched, never taken,
+        // so everything under it still works.
+        val swipe: Modifier = if (!LocalPlatform.current.swipeBack) Modifier else Modifier.pointerInput(Unit) {
+            val edge = 24.dp.toPx()
+            val far = 72.dp.toPx()
+            awaitEachGesture {
+                val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+                if (down.position.x > edge) return@awaitEachGesture
+                var last = down.position
+                while (true) {
+                    val change = awaitPointerEvent(PointerEventPass.Initial).changes.firstOrNull { it.id == down.id } ?: break
+                    last = change.position
+                    if (!change.pressed) break
+                }
+                val dx = last.x - down.position.x
+                val dy = last.y - down.position.y
+                if (dx > far && dx > 2 * kotlin.math.abs(dy)) {
+                    if (overlay != null) overlay = null else tab = Tab.TODAY
+                }
+            }
+        }
+
+        Column(Modifier.fillMaxSize().background(Lc.bg).then(swipe)) {
             Box(Modifier.weight(1f).statusBarsPadding()) {
                 when (val o = overlay) {
                     is Overlay.Reader -> ReaderScreen(state, o.items, o.start, o.keyPrefix) { overlay = null }

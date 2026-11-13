@@ -236,6 +236,8 @@ class AppState {
     /** Tomorrow's ticks: Matins and Lauds said tonight by anticipation count for tomorrow. */
     private var doneNext by mutableStateOf(loadDone(LocalDate.now().plusDays(1)))
 
+    private var prunedOn: LocalDate? = null
+
     fun refreshDay() {
         val now = LocalDate.now()
         if (now != today) {
@@ -264,8 +266,11 @@ class AppState {
             today.plusDays(1) -> doneNext = new
         }
         val edit = prefs.edit().putStringSet("done_$d", new)
-        // forget ticks older than a week
-        prefs.keys.filter { it.startsWith("done_") && it < "done_${today.minusDays(7)}" }.forEach { edit.remove(it) }
+        // Forget ticks older than a week; once a day is enough (listing every saved setting is slow on iPhone).
+        if (prunedOn != today) {
+            prunedOn = today
+            prefs.keys.filter { it.startsWith("done_") && it < "done_${today.minusDays(7)}" }.forEach { edit.remove(it) }
+        }
         edit.apply()
     }
 

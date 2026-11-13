@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.littlecloud.app.data.AppState
+import com.littlecloud.app.data.Bell
 import com.littlecloud.app.data.Calendar1962
 import com.littlecloud.app.data.Store
 import com.littlecloud.app.platform.BellSystem
@@ -17,6 +18,7 @@ import com.littlecloud.app.ui.LText
 import com.littlecloud.app.ui.OutlineButton
 import platform.AVFAudio.AVAudioPlayer
 import platform.AVFAudio.AVAudioSession
+import platform.AVFAudio.AVAudioSessionCategoryOptionMixWithOthers
 import platform.AVFAudio.AVAudioSessionCategoryPlayback
 import platform.AVFAudio.setActive
 import platform.Foundation.NSBundle
@@ -30,11 +32,14 @@ import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
 
 /**
- * Bells on iPhone, as local notifications. iOS keeps at most 64 waiting notifications, so the
- * bells are laid out for the next days only and laid out again each time the app opens.
+ * Bells on iPhone, as local notifications. iOS keeps at most 64 waiting notifications, so bells
+ * repeat daily where they can; see [reschedule].
  */
 object IosBells : BellSystem {
     private const val KEY_IDS = "iosBellIds"
+    private const val RENEW_ID = "bell-renew"
+    /** A bell unchanged for this many days ahead is set to repeat daily. */
+    private const val STEADY_DAYS = 21
 
     private data class Snd(val key: String, val label: String, val note: String)
     private val all = listOf(
@@ -62,50 +67,91 @@ object IosBells : BellSystem {
         ) { granted, _ -> if (granted) dispatch_async(dispatch_get_main_queue()) { reschedule() } }
     }
 
+    /** What a bell says and how it sounds on a given day. */
+    private data class Ring(val title: String, val body: String, val opens: String?, val sound: String)
+
+    private fun ringOn(bell: Bell, day: LocalDate, silence: Boolean): Ring {
+        var title = bell.name
+        var opens = bell.opens
+        var body = when (bell.opens) {
+            "office" -> "Time to pray the Little Office."
+            "intimacy" -> "Time for mental prayer."
+            "evening" -> "Time for night prayers."
+            else -> "Time to pray."
+        }
+        if (bell.opens == "prayer:angelus") {
+            if (Calendar1962.isPaschaltide(day)) {
+                title = "Regina Cæli"; body = "Queen of Heaven, rejoice, alleluia."; opens = "prayer:regina_caeli"
+            } else body = "The Angel of the Lord declared unto Mary."
+        }
+        return Ring(title, body, opens, if (silence && Calendar1962.isTriduum(day)) "clapper" else bell.sound)
+    }
+
+    private fun add(id: String, ring: Ring, comps: NSDateComponents, repeats: Boolean) {
+        val content = UNMutableNotificationContent().apply {
+            setTitle(ring.title)
+            setBody(ring.body)
+            setSound(UNNotificationSound.soundNamed(soundFile(ring.sound)))
+            setUserInfo(mapOf<Any?, Any?>("opens" to (ring.opens ?: "")))
+        }
+        val trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponents(comps, repeats = repeats)
+        center.addNotificationRequest(UNNotificationRequest.requestWithIdentifier(id, content, trigger), null)
+    }
+
+    /**
+     * A bell that says and sounds the same for the coming weeks is set once, to repeat every day, and
+     * so never runs out. Near the Triduum and at either end of Paschaltide, where the sound or the
+     * words change with the date, the bells are set day by day for as many days as iOS has room for,
+     * with a reminder at the end to open the app so the next days can be set.
+     */
     override fun reschedule() {
         val prefs = Store.prefs()
         prefs.getStringSet(KEY_IDS, emptySet())?.toList()?.let { center.removePendingNotificationRequestsWithIdentifiers(it) }
 
         val bells = Store.loadBells().filter { it.enabled && it.times.isNotEmpty() }
-        val perDay = bells.sumOf { it.times.size }.coerceAtLeast(1)
-        val days = (60 / perDay).coerceIn(1, 14)
+        val silence = Store.triduumSilence()
         val today = LocalDate.now()
         val nowMin = LocalTime.now().let { it.hour * 60 + it.minute }
         val ids = mutableSetOf<String>()
 
-        for (offset in 0 until days) {
-            val day = today.plusDays(offset)
-            val silent = Store.triduumSilence() && Calendar1962.isTriduum(day)
-            for (bell in bells) for ((idx, minutes) in bell.times.withIndex()) {
-                if (offset == 0 && minutes <= nowMin) continue
-                var title = bell.name
-                var opens = bell.opens
-                var body = when (bell.opens) {
-                    "office" -> "Time to pray the Little Office."
-                    "intimacy" -> "Time for mental prayer."
-                    "evening" -> "Time for night prayers."
-                    else -> "Time to pray."
+        val (daily, dated) = bells.partition { bell ->
+            val first = ringOn(bell, today, silence)
+            (1..STEADY_DAYS).all { ringOn(bell, today.plusDays(it), silence) == first }
+        }
+
+        for (bell in daily) for ((idx, minutes) in bell.times.withIndex()) {
+            val comps = NSDateComponents().apply { setHour((minutes / 60).toLong()); setMinute((minutes % 60).toLong()) }
+            val id = "bell-${bell.id}-$idx-daily"
+            add(id, ringOn(bell, today, silence), comps, repeats = true)
+            ids += id
+        }
+
+        val perDay = dated.sumOf { it.times.size }
+        if (perDay > 0) {
+            val room = (60 - daily.sumOf { it.times.size }).coerceAtLeast(perDay)
+            val days = (room / perDay).coerceIn(1, 14)
+            for (offset in 0 until days) {
+                val day = today.plusDays(offset)
+                for (bell in dated) for ((idx, minutes) in bell.times.withIndex()) {
+                    if (offset == 0 && minutes <= nowMin) continue
+                    val comps = NSDateComponents().apply {
+                        setYear(day.year.toLong()); setMonth(day.monthNumber.toLong()); setDay(day.dayOfMonth.toLong())
+                        setHour((minutes / 60).toLong()); setMinute((minutes % 60).toLong())
+                    }
+                    val id = "bell-${bell.id}-$idx-$day"
+                    add(id, ringOn(bell, day, silence), comps, repeats = false)
+                    ids += id
                 }
-                if (bell.opens == "prayer:angelus") {
-                    if (Calendar1962.isPaschaltide(day)) {
-                        title = "Regina Cæli"; body = "Queen of Heaven, rejoice, alleluia."; opens = "prayer:regina_caeli"
-                    } else body = "The Angel of the Lord declared unto Mary."
-                }
-                val content = UNMutableNotificationContent().apply {
-                    setTitle(title)
-                    setBody(body)
-                    setSound(UNNotificationSound.soundNamed(soundFile(if (silent) "clapper" else bell.sound)))
-                    setUserInfo(mapOf<Any?, Any?>("opens" to (opens ?: "")))
-                }
-                val comps = NSDateComponents().apply {
-                    setYear(day.year.toLong()); setMonth(day.monthNumber.toLong()); setDay(day.dayOfMonth.toLong())
-                    setHour((minutes / 60).toLong()); setMinute((minutes % 60).toLong())
-                }
-                val id = "bell-${bell.id}-$idx-$day"
-                val trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponents(comps, repeats = false)
-                center.addNotificationRequest(UNNotificationRequest.requestWithIdentifier(id, content, trigger), null)
-                ids += id
             }
+            // The day after the last one set: say so, rather than fall silent.
+            val after = today.plusDays(days)
+            val first = dated.flatMap { it.times }.min()
+            val comps = NSDateComponents().apply {
+                setYear(after.year.toLong()); setMonth(after.monthNumber.toLong()); setDay(after.dayOfMonth.toLong())
+                setHour((first / 60).toLong()); setMinute((first % 60).toLong())
+            }
+            add(RENEW_ID, Ring("Little Cloud", "Open Little Cloud to set the bells for the coming days.", "tab:bells", "hand"), comps, repeats = false)
+            ids += RENEW_ID
         }
         prefs.edit().putStringSet(KEY_IDS, ids).apply()
     }
@@ -139,7 +185,8 @@ object IosBells : BellSystem {
             if (key != null) {
                 val url: NSURL? = NSBundle.mainBundle.URLForResource(soundFile(key).removeSuffix(".caf"), "caf")
                 if (url != null) {
-                    AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, null)
+                    // Mixed with whatever is playing, so a preview does not stop the user's music.
+                    AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, withOptions = AVAudioSessionCategoryOptionMixWithOthers, error = null)
                     AVAudioSession.sharedInstance().setActive(true, null)
                     holder[0] = AVAudioPlayer(contentsOfURL = url, error = null).also { it.play() }
                 }
