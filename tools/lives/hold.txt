@@ -1,0 +1,19 @@
+# Entries left out of the app for now. In each, the scan has lost or garbled words that cannot be
+# put right from the scan alone; they need reading against the page (or the HathiTrust 1937 copy).
+# One per line: MM-DD and the heading, as in lasance-accounts.txt.
+01-11 St. Hyginus, Pope and Martyr            # "his feast a pelebrasea by ... atuit"
+03-19 St. Joseph, Spouse of the Blessed Virgin Mary, Confessor   # "the Holy renty"
+04-30 St. Catharine of Siena, Virgin          # end of the entry lost; the Solemnity of St. Joseph has run into it
+05-06 St. John before the Latin Gate          # "to b digni. dium drink of the chalice"
+05-17 St. Paschal Baylon, Confessor           # "Pope Leo ZI"
+06-18 St. Ephrem the Syrian, Deacon, Confessor and Doctor of the Church   # "a Doctor: tna GU"
+06-25 St. William, Abbot                      # "many thousands aay pilgrims"
+07-12 Sts. Nabor and Felix, Martyrs           # "and Trom Polan devotion to them spread"
+07-24 St. Christina, Virgin, Martyr           # "she was RECEN more than fourteen"
+08-22 Immaculate Heart of Mary                # added after 1937 (it cites December 1942): not in the public-domain edition; also garbled, with Sts. Timothy and companions run into it
+09-02 St. Stephen, King of Hungary, Confessor # "not only in dT but even in Constantinople"
+10-01 St. Remigius, Bishop, Confessor         # "engraved on a uode"
+10-10 St. Francis Borgia, Confessor           # "Conspicuous Jor TA holiness"
+11-04 St. Charles Borromeo, Bishop, Confessor # "the basis of erred regulations"; date of death lost
+11-18 The Dedication of the Basilicas of St. Peter and St. Paul   # heading and the date of consecration garbled
+11-30 St. Andrew, Apostle                     # last sentence garbled

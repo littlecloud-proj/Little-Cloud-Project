@@ -12,8 +12,9 @@ Scripts used to generate the bundled data. They are not part of the app build.
 - `prayers/` – builds `MorePrayers.kt` and related prayer texts from the public-domain
   sources in `prayers/sources/` (Hammer 1909, Gahan, Lyra Liturgica, Carmelite manual 1850, Raccolta 1880).
 - `lives/` – builds `lives.json`, the short accounts of feasts and saints from the Lasance missal (1937).
-  `lasance-accounts.txt` is the transcribed text; `build.py` ties each account to the calendar titles;
-  `REVIEW.md` lists what is still to be proofread or added.
+  `extract.py` makes `lasance-accounts.txt` from the scan section in `sources/`, applying `corrections.tsv`
+  and holding back the entries in `hold.txt`; `build.py` ties each account to the calendar titles
+  (`aliases.tsv` where the names differ). `REVIEW.md` says what is still to be proofread.
 
 ## Note on the 1955 harvest
 

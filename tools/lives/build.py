@@ -13,7 +13,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FILES = os.path.join(HERE, "..", "..", "app", "src", "commonMain", "composeResources", "files")
 
 # Words that say what a saint was, not who: never used to recognise a feast.
-GENERIC = set("""st sts saint saints the of and at in or a an feast pope popes martyr martyrs virgin virgins bishop
+GENERIC = set("""s ss st sts saint saints the of and at in or a an feast pope popes martyr martyrs virgin virgins bishop
 bishops confessor confessors doctor church abbot abbess widow king queen apostle apostles evangelist priest
 deacon holy blessed our lady lord i ii iii iv v vi vii first great companions hermit""".split())
 
@@ -24,9 +24,9 @@ def parse(path):
         line = raw.rstrip("\n")
         if line.startswith("#"):
             continue
-        m = re.match(r"@\s*(\d\d)-(\d\d)\s*\|\s*(.+?)\s*$", line)
+        m = re.match(r"@(!?)\s*(\d\d)-(\d\d)\s*\|\s*(.+?)\s*$", line)
         if m:
-            cur = {"date": f"{m.group(1)}-{m.group(2)}", "title": m.group(3), "paras": [[]]}
+            cur = {"date": f"{m.group(2)}-{m.group(3)}", "title": m.group(4), "paras": [[]], "held": bool(m.group(1))}
             out.append(cur)
         elif cur is not None:
             if line.strip():
@@ -36,7 +36,7 @@ def parse(path):
     for e in out:
         e["text"] = "\n".join(" ".join(p) for p in e["paras"] if p)
         del e["paras"]
-    return [e for e in out if e["text"]]
+    return [e for e in out if e["text"] and not e["held"]]  # "@!" entries wait for proofreading (hold.txt)
 
 
 def words(title):
@@ -64,6 +64,9 @@ def matches(entry, title):
     a, b = words(entry["title"]), set(words(title))
     if not a or ("vigil" in a) != ("vigil" in b):
         return False
+    # Days within an octave are named after the feast, not after a saint: tie them by hand (aliases.tsv).
+    if "octave" in a or "octave" in b or "within" in b:
+        return False
     # The name (the first telling word) must be there, and nothing in the calendar title may
     # point to someone else of the same name on the same day.
     return a[0] in b
@@ -73,8 +76,16 @@ def main():
     entries = parse(os.path.join(HERE, "lasance-accounts.txt"))
     by = calendar_titles()
     titles, unmatched = collections.defaultdict(list), []
+    every = set().union(*by.values())
+    alias = collections.defaultdict(list)  # heading in the missal -> the calendar's name for the feast
+    for line in open(os.path.join(HERE, "aliases.tsv"), encoding="utf-8"):
+        if line.strip() and not line.startswith("#"):
+            k, v = line.rstrip("\n").split("\t")
+            alias[k].append(v)
+            if v not in every:
+                print(f"aliases.tsv: no such calendar title: {v}")
     for n, e in enumerate(entries):
-        found = sorted(t for t in by.get(e["date"], ()) if matches(e, t))
+        found = sorted(set(t for t in by.get(e["date"], ()) if matches(e, t)) | set(alias.get(e["title"], ())))
         if not found:
             unmatched.append(e)
         for t in found:
