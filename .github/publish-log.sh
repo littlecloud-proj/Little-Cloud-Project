@@ -13,6 +13,7 @@ if [ -d "$GITHUB_WORKSPACE/iosApp/iosApp.xcodeproj" ]; then
   rm -rf iosApp.xcodeproj/xcuserdata iosApp.xcodeproj/project.xcworkspace/xcuserdata
 fi
 cp "$GITHUB_WORKSPACE"/app/build/outputs/apk/debug/app-debug.apk ./LittleCloud-debug.apk 2>/dev/null
+cp "$GITHUB_WORKSPACE"/app/build/outputs/apk/qa/app-qa.apk ./LittleCloud-qa.apk 2>/dev/null
 cp "$GITHUB_WORKSPACE"/app/build/outputs/bundle/release/app-release.aab ./LittleCloud-release.aab 2>/dev/null
 [ -d "$GITHUB_WORKSPACE/shots" ] && cp -R "$GITHUB_WORKSPACE/shots" .
 printf '%s %s %s\n' "$GITHUB_SHA" "$status" "$(date -u +%FT%TZ)" > status.txt

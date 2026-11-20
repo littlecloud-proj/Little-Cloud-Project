@@ -58,7 +58,7 @@ android {
         applicationId = "org.littlecloudproject.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 33
+        versionCode = 34
         versionName = "1.0-beta2"
     }
 
@@ -85,8 +85,20 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8: shrink and obfuscate, as Google Play asks. The mapping file goes into the bundle,
+            // so Play can still read crash reports.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.findByName("upload")
+            ndk { debugSymbolLevel = "SYMBOL_TABLE" }
+        }
+        // The release build (shrunk with R8) signed with the shared debug key, for CI screenshots and
+        // test installs, so what is tested is what Play receives.
+        create("qa") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
         }
     }
 

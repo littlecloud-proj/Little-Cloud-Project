@@ -26,7 +26,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Build Android debug APK
         shell: bash
-        run: ./gradlew --no-daemon --stacktrace :app:assembleDebug :app:testDebugUnitTest 2>&1 | tee build.log
+        run: ./gradlew --no-daemon --stacktrace :app:assembleDebug :app:assembleQa :app:testDebugUnitTest 2>&1 | tee build.log
       - name: Build signed release bundle for Google Play
         if: env.HAS_UPLOAD_KEY == 'true'
         shell: bash
@@ -43,8 +43,10 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: LittleCloud-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: LittleCloud-apks
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/qa/*.apk
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules

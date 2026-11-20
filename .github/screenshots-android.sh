@@ -2,7 +2,7 @@
 # Installs the debug APK on the emulator and photographs each screen, light and dark.
 set -x
 mkdir -p shots
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb install -r app/build/outputs/apk/qa/app-qa.apk
 adb shell pm grant org.littlecloudproject.app android.permission.POST_NOTIFICATIONS || true
 shoot() { # name, open-request, seconds to wait
   adb shell am force-stop org.littlecloudproject.app
