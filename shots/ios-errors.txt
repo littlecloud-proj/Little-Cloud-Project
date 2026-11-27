@@ -1,0 +1,50 @@
+2026-11-27 21:03:37.376 Df LittleCloud[36952:18200] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.383 Df LittleCloud[36952:18200] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.385 Df LittleCloud[36952:18200] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.386 Df LittleCloud[36952:18200] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.406 Df LittleCloud[36952:181eb] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
+2026-11-27 21:03:37.407 Df LittleCloud[36952:181eb] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-11-27 21:03:37.407 Df LittleCloud[36952:181eb] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-11-27 21:03:37.409 Df LittleCloud[36952:181eb] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-11-27 21:03:37.476 Df LittleCloud[36952:181eb] [com.apple.BacklightServices:scenes] 0x600000c11bf0 setDelegate:<0x600000c0c870 _UIBacklightEnvironment> hasDelegate:YES for environment:sceneID:org.littlecloudproject.app-default
+2026-11-27 21:03:37.480 Df LittleCloud[36952:181eb] [com.apple.UIKit:KeyWindow] Setting default evaluation strategy for UIUserInterfaceIdiomPhone to LastOneWins
+2026-11-27 21:03:37.491 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.496 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.502 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.504 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.507 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.511 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.513 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.516 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.518 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.520 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.523 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.525 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.525 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.526 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.527 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.527 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.528 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.528 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.529 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.529 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.529 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.530 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.531 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.531 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.531 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.532 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.533 Df LittleCloud[36952:18203] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.533 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.534 Df LittleCloud[36952:181ff] [com.apple.UserNotifications:Connections] [org.littlecloudproject.app] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+2026-11-27 21:03:37.542 Df LittleCloud[36952:181eb] [com.apple.UIKit:KeyWindow] Window did become application key: UIWindow: 0x102f09230; contextId: 0x2EECEFE6; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Aorg.littlecloudproject.app-default
+2026-11-27 21:03:37.548 Df LittleCloud[36952:181eb] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:org.littlecloudproject.app-default  persistentID: F6D99290-D2C3-4C17-946C-8E17945733A3
+2026-11-27 21:03:38.401 Df LittleCloud[36952:181eb] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:1 [34E07CCA-DA33-48E5-A01C-BE411420BB48] (reporting strategy default)>
+2026-11-27 21:03:38.401 Df LittleCloud[36952:181eb] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:2 [78EBEBC2-E36A-4E6B-A8F2-D1A6390A3FF1] (reporting strategy default)>
+2026-11-27 21:03:38.401 Df LittleCloud[36952:181eb] [com.apple.network:activity] Set activity <nw_activity 50:1 [34E07CCA-DA33-48E5-A01C-BE411420BB48] (reporting strategy default)> as the global parent
+2026-11-27 21:03:38.403 Df LittleCloud[36952:181eb] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:org.littlecloudproject.app-default  persistentID: F6D99290-D2C3-4C17-946C-8E17945733A3
+2026-11-27 21:03:38.418 Df LittleCloud[36952:181eb] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:org.littlecloudproject.app-default  persistentID: F6D99290-D2C3-4C17-946C-8E17945733A3
+2026-11-27 21:03:38.418 Df LittleCloud[36952:181eb] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:org.littlecloudproject.app-default  persistentID: F6D99290-D2C3-4C17-946C-8E17945733A3
+2026-11-27 21:03:38.482 Df LittleCloud[36952:181eb] [com.apple.network:activity] <nw_activity 50:1 [34E07CCA-DA33-48E5-A01C-BE411420BB48] (global parent) (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 1893ms
+2026-11-27 21:03:38.482 Df LittleCloud[36952:181eb] [com.apple.network:activity] <nw_activity 50:2 [78EBEBC2-E36A-4E6B-A8F2-D1A6390A3FF1] (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 1893ms
+2026-11-27 21:03:38.482 Df LittleCloud[36952:181eb] [com.apple.network:activity] Unsetting the global parent activity <nw_activity 50:1 [34E07CCA-DA33-48E5-A01C-BE411420BB48] (global parent) (reporting strategy default) complete (reason success)>
