@@ -1,0 +1,255 @@
+Downloading https://services.gradle.org/distributions/gradle-8.11.1-bin.zip
+.............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%.............100%
+
+Welcome to Gradle 8.11.1!
+
+Here are the highlights of this release:
+ - Parallel load and store for Configuration Cache
+ - Java compilation errors at the end of the build output
+ - Consolidated report for warnings and deprecations
+
+For more details see https://docs.gradle.org/8.11.1/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+WARNING: The option setting 'android.buildOnlyTargetAbi=false' is experimental.
+The current default is 'true'.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:kmpPartiallyResolvedDependenciesChecker
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :app:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :app:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForCommonMain
+> Task :app:prepareComposeResourcesTaskForCommonMain
+> Task :app:generateResourceAccessorsForCommonMain
+> Task :app:generateActualResourceCollectorsForAndroidMain
+> Task :app:generateComposeResClass
+> Task :app:generateExpectResourceCollectorsForCommonMain
+> Task :app:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :app:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :app:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:copyDebugComposeResourcesToAndroidAssets
+> Task :app:debugAssetsCopyForAGP NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:processDebugManifestForPackage
+> Task :app:compressDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:processDebugResources
+> Task :app:checkDebugDuplicateClasses
+> Task :app:compileDebugKotlinAndroid
+> Task :app:mergeExtDexDebug
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics
+> Task :app:processDebugJavaRes
+> Task :app:mergeLibDexDebug
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeProjectDexDebug
+> Task :app:validateSigningDebug
+> Task :app:mergeDebugNativeLibs
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:preQaBuild UP-TO-DATE
+> Task :app:mergeQaJniLibFolders
+
+> Task :app:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so. Run with --info option to learn more.
+
+> Task :app:mergeQaNativeLibs
+> Task :app:buildKotlinToolingMetadata
+
+> Task :app:stripQaDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so. Run with --info option to learn more.
+
+> Task :app:checkQaDuplicateClasses
+> Task :app:convertXmlValueResourcesForAndroidQa NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForAndroidQa NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForAndroidQa NO-SOURCE
+> Task :app:generateResourceAccessorsForAndroidQa NO-SOURCE
+> Task :app:extractQaNativeSymbolTables
+> Task :app:mergeDebugJavaResource
+> Task :app:mergeQaNativeDebugMetadata NO-SOURCE
+> Task :app:generateQaResValues
+> Task :app:checkQaAarMetadata
+> Task :app:mapQaSourceSetPaths
+> Task :app:generateQaResources
+> Task :app:packageQaResources
+> Task :app:parseQaLocalResources
+> Task :app:createQaCompatibleScreenManifests
+> Task :app:extractDeepLinksQa
+> Task :app:mergeQaResources
+> Task :app:processQaMainManifest
+> Task :app:processQaManifest
+> Task :app:javaPreCompileQa
+> Task :app:processQaManifestForPackage
+> Task :app:extractProguardFiles
+> Task :app:mergeQaArtProfile
+> Task :app:mergeQaStartupProfile
+> Task :app:mergeQaShaders
+> Task :app:compileQaShaders NO-SOURCE
+> Task :app:copyQaComposeResourcesToAndroidAssets
+> Task :app:generateQaAssets UP-TO-DATE
+> Task :app:qaAssetsCopyForAGP NO-SOURCE
+> Task :app:mergeQaAssets
+> Task :app:processQaResources
+> Task :app:extractQaVersionControlInfo
+> Task :app:compressQaAssets
+> Task :app:convertXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+> Task :app:copyNonXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForAndroidUnitTest NO-SOURCE
+> Task :app:generateResourceAccessorsForAndroidUnitTest NO-SOURCE
+> Task :app:convertXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForAndroidUnitTestDebug NO-SOURCE
+> Task :app:generateResourceAccessorsForAndroidUnitTestDebug NO-SOURCE
+> Task :app:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :app:generateResourceAccessorsForCommonTest NO-SOURCE
+> Task :app:collectQaDependencies
+> Task :app:sdkQaDependencyData
+> Task :app:validateSigningQa
+> Task :app:writeQaAppMetadata
+> Task :app:writeQaSigningConfigVersions
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:compileDebugUnitTestKotlinAndroid
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+> Task :app:testDebugUnitTest
+> Task :app:compileQaKotlinAndroid
+> Task :app:compileQaJavaWithJavac NO-SOURCE
+> Task :app:mergeQaGeneratedProguardFiles
+> Task :app:processQaJavaRes
+> Task :app:mergeQaJavaResource
+> Task :app:expandQaArtProfileWildcards
+> Task :app:generateQaLintVitalReportModel
+> Task :app:minifyQaWithR8
+> Task :app:lintVitalAnalyzeQa
+> Task :app:lintVitalReportQa
+> Task :app:lintVitalQa
+> Task :app:convertShrunkResourcesToBinaryQa
+> Task :app:optimizeQaResources
+> Task :app:compileQaArtProfile
+> Task :app:packageQa
+> Task :app:createQaApkListingFileRedirect
+> Task :app:assembleQa
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1795812213180.json
+
+BUILD SUCCESSFUL in 3m 30s
+97 actionable tasks: 97 executed
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+WARNING: The option setting 'android.buildOnlyTargetAbi=false' is experimental.
+The current default is 'true'.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :app:convertXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :app:prepareComposeResourcesTaskForAndroidRelease NO-SOURCE
+> Task :app:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :app:copyNonXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :app:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :app:copyReleaseComposeResourcesToAndroidAssets
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:releaseAssetsCopyForAGP NO-SOURCE
+> Task :app:mergeReleaseAssets
+> Task :app:buildKotlinToolingMetadata UP-TO-DATE
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:kmpPartiallyResolvedDependenciesChecker
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :app:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :app:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :app:generateComposeResClass UP-TO-DATE
+> Task :app:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :app:generateResourceAccessorsForAndroidRelease NO-SOURCE
+> Task :app:generateReleaseResValues
+> Task :app:checkReleaseAarMetadata
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:parseReleaseLocalResources
+> Task :app:mergeReleaseResources
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:processReleaseManifestForPackage
+> Task :app:javaPreCompileRelease
+> Task :app:mergeReleaseArtProfile
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :app:mergeReleaseStartupProfile
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:writeReleaseAppMetadata
+> Task :app:mergeReleaseNativeLibs
+> Task :app:collectReleaseDependencies
+> Task :app:configureReleaseDependencies
+> Task :app:validateSigningRelease
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so. Run with --info option to learn more.
+
+> Task :app:parseReleaseIntegrityConfig
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:processReleaseResources
+> Task :app:compileReleaseKotlinAndroid
+> Task :app:compileReleaseJavaWithJavac NO-SOURCE
+> Task :app:mergeReleaseGeneratedProguardFiles
+> Task :app:processReleaseJavaRes
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:expandReleaseArtProfileWildcards
+> Task :app:mergeReleaseJavaResource
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
+> Task :app:minifyReleaseWithR8
+> Task :app:buildReleasePreBundle
+> Task :app:compileReleaseArtProfile
+> Task :app:packageReleaseBundle
+> Task :app:signReleaseBundle
+> Task :app:produceReleaseBundleIdeListingFile
+> Task :app:createReleaseBundleListingFileRedirect
+> Task :app:bundleRelease
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1795812418207.json
+
+BUILD SUCCESSFUL in 1m 40s
+55 actionable tasks: 47 executed, 8 up-to-date
