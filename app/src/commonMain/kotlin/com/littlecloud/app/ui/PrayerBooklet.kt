@@ -58,6 +58,7 @@ object PrayerBooklet {
             else (if (showLatin) para(la, "la") else "") + (if (showEn) para(en!!, "v") else "")
         }
         val sections = buildString {
+            if (state.textsMissing(date)) append("<section><p class=\"r\">${esc(com.littlecloud.app.data.Americas.MISSING_TEXTS_NOTE)}</p></section>")
             state.collect(date)?.let { append("<section><h2>Collect</h2>"); append(two(it.la, it.en)); append("</section>") }
             state.readings(date).forEach { r ->
                 append("<section><h2>${if (r.gospel) "Gospel" else "Epistle"}</h2><div class=\"sub\">${esc(r.citation)}</div>")

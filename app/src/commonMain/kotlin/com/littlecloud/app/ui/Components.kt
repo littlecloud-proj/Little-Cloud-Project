@@ -302,6 +302,10 @@ fun CollectText(state: com.littlecloud.app.data.AppState, date: com.littlecloud.
         }
     }
     val col = c
+    if (state.textsMissing(date)) {
+        LText(com.littlecloud.app.data.Americas.MISSING_TEXTS_NOTE, size - 2, Lc.muted, lineHeight = 1.45f)
+        return
+    }
     if (col == null) {
         LText("No collect is said today.", size - 2, Lc.muted)
         return

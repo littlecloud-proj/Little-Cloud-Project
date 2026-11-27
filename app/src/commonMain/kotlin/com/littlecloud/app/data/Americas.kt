@@ -28,11 +28,14 @@ object Americas {
         val rank: String,
         /** Kept only with the American rules of fast and abstinence. */
         val usOnly: Boolean,
-        val collect: Collects.Collect,
-        private val epistle: String,
-        private val gospel: String,
+        /** Null when the proper texts are not yet on file from a published, public-domain source. */
+        val collect: Collects.Collect?,
+        private val epistle: String?,
+        private val gospel: String?,
     ) {
-        fun readings(): List<Readings.Reading> = listOfNotNull(
+        val textsMissing get() = collect == null
+
+        fun readings(): List<Readings.Reading> = if (epistle == null || gospel == null) emptyList() else listOfNotNull(
             Readings.byCitation(epistle, gospel = false),
             Readings.byCitation(gospel, gospel = true),
         )
@@ -81,7 +84,30 @@ object Americas {
             ),
             epistle = "2 Cor 12:11-15", gospel = "Luc 6:17-23",
         ),
+        // Feasts kept with the American rules whose proper texts are not yet on file. The day is shown
+        // as the feast, as on the American calendars, and the collect and readings carry a note asking
+        // for a public-domain source instead of falling back to the weekday's texts.
+        missing(1, 15, "Our Lady of Prompt Succor", LColor.WHITE),
+        missing(4, 28, "St. Louis Marie Grignion de Montfort, Confessor", LColor.WHITE),
+        missing(6, 27, "Our Mother of Perpetual Help", LColor.WHITE),
+        missing(7, 9, "St. Maria Goretti, Virgin and Martyr", LColor.RED),
+        missing(8, 11, "St. Philomena, Virgin and Martyr", LColor.RED),
+        missing(11, 27, "Our Lady of the Miraculous Medal", LColor.WHITE),
+        missing(12, 10, "Our Lady of Loreto", LColor.WHITE),
+        missing(12, 22, "St. Frances Xavier Cabrini, Virgin", LColor.WHITE),
     )
+
+    private fun missing(month: Int, day: Int, title: String, color: LColor) = Feast(
+        month, day, title, 3, color, "Double · kept in the United States · proper texts not yet on file", usOnly = true,
+        collect = null, epistle = null, gospel = null,
+    )
+
+    /** Shown where a feast's collect and readings would be, until they are found. */
+    const val MISSING_TEXTS_NOTE =
+        "The proper texts of this feast are not yet in Little Cloud. Every text in the app is taken word " +
+            "for word from a published, public-domain source, and we have not yet found one for this feast. " +
+            "If you have its Mass in an older hand missal or another public-domain book, please write to " +
+            "LittleCloudProject@proton.me."
 
     private fun feastOn(d: LocalDate, discipline: Discipline): Feast? =
         feasts.firstOrNull { it.month == d.monthValue && it.day == d.dayOfMonth && (!it.usOnly || discipline == Discipline.US_1951) }

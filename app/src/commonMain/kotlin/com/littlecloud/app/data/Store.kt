@@ -356,15 +356,22 @@ class AppState {
     fun dayInfo(d: LocalDate): LiturgicalDay = Americas.apply(baseDay(d), discipline, rubrics)
 
     /** The Epistle and Gospel of the day's Mass, by the rubrics chosen. */
-    fun readings(d: LocalDate): List<Readings.Reading> =
-        Americas.kept(baseDay(d), discipline)?.readings()?.takeIf { it.size == 2 } ?: Readings.forDate(d, rubrics)
+    fun readings(d: LocalDate): List<Readings.Reading> {
+        val f = Americas.kept(baseDay(d), discipline)
+        if (f?.textsMissing == true) return emptyList()
+        return f?.readings()?.takeIf { it.size == 2 } ?: Readings.forDate(d, rubrics)
+    }
+
+    /** True when the day keeps a feast whose proper texts are not yet on file (see Americas). */
+    fun textsMissing(d: LocalDate): Boolean = Americas.kept(baseDay(d), discipline)?.textsMissing == true
 
     /** Text size for the readings, shared with mental prayer. */
     var readingSize by mutableStateOf(prefs.getInt("readSize", 18)); private set
     fun updateReadingSize(v: Int) { readingSize = v; prefs.edit().putInt("readSize", v).apply() }
 
     fun collect(d: LocalDate): Collects.Collect? =
-        Americas.kept(baseDay(d), discipline)?.collect
+        if (textsMissing(d)) null
+        else Americas.kept(baseDay(d), discipline)?.collect
             ?: olderCalendar.let { if (it != null) it.collect(d) else Collects.forDate(d) }
 
     // ---- The user's edits to prayer-book texts --------------------------------------------

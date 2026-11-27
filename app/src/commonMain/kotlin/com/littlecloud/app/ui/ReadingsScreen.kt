@@ -35,7 +35,15 @@ private fun label(r: Readings.Reading) = when {
 @Composable
 fun ReadingsCard(state: AppState, onOpen: () -> Unit) {
     val list = rememberReadings(state, state.today) ?: return
-    if (list.isEmpty()) return
+    if (list.isEmpty()) {
+        if (!state.textsMissing(state.today)) return
+        LCard(padding = 20.dp) {
+            Eyebrow("Today’s readings")
+            Spacer(Modifier.height(10.dp))
+            LText(com.littlecloud.app.data.Americas.MISSING_TEXTS_NOTE, 15, Lc.muted, lineHeight = 1.45f)
+        }
+        return
+    }
     val english = state.officeLang == "english"
     LCard(padding = 20.dp) {
         Eyebrow("Today’s readings")
@@ -83,6 +91,8 @@ fun ReadingsScreen(state: AppState, onBack: () -> Unit) {
             if (show.englishForSpanish) LText(NO_SPANISH_NOTE, 14, Lc.muted)
             when {
                 list == null -> LText("…", 18, Lc.muted)
+                list.isEmpty() && state.textsMissing(state.today) ->
+                    LText(com.littlecloud.app.data.Americas.MISSING_TEXTS_NOTE, 16, Lc.muted, lineHeight = 1.45f)
                 list.isEmpty() -> LText("No readings are on file for this day.", 16, Lc.muted)
                 else -> list.forEach { r ->
                     Column {
